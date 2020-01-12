@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="yinjiangQAQ Blog">
 <meta property="og:description" content="解决hexo categories和tags页面不显示解决办法第一步 需要新建tags和categories页面在终端powershell下，确保此时是在hexo目录下，命令行输入 1hexo new page tags &#x2F;&#x2F;新建tags页面 然后会在hexo下的source目录看到tags文件夹，在index.md里输入 123456---title: tagsdate: 2020-01-10">
 <meta property="article:published_time" content="2020-01-12T09:22:40.000Z">
-<meta property="article:modified_time" content="2020-01-12T16:18:01.624Z">
+<meta property="article:modified_time" content="2020-01-12T16:23:58.159Z">
 <meta property="article:author" content="yinjiangQAQ">
 <meta property="article:tag" content="前端">
 <meta name="twitter:card" content="summary">
@@ -317,6 +317,16 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/01/12/hexo%20categories%E5%92%8Ctags%E9%A1%B5%E9%9D%A2%E4%B8%8D%E6%98%BE%E7%A4%BA%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/01/12/hexo%20categories%E5%92%8Ctags%E9%A1%B5%E9%9D%A2%E4%B8%8D%E6%98%BE%E7%A4%BA%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -329,6 +339,37 @@
             </span>
           
 
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  756 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3 分钟
+                </span>
+              
+            </div>
           
 
           
@@ -348,7 +389,7 @@
       
         <h2 id="解决hexo-categories和tags页面不显示解决办法"><a href="#解决hexo-categories和tags页面不显示解决办法" class="headerlink" title="解决hexo categories和tags页面不显示解决办法"></a>解决hexo categories和tags页面不显示解决办法</h2><h3 id="第一步-需要新建tags和categories页面"><a href="#第一步-需要新建tags和categories页面" class="headerlink" title="第一步 需要新建tags和categories页面"></a>第一步 需要新建tags和categories页面</h3><p>在终端powershell下，确保此时是在hexo目录下，命令行输入</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page tags //新建tags页面</span><br></pre></td></tr></table></figure>
-<p>然后会在hexo<br>下的source目录看到tags文件夹，在index.md里输入</p>
+<p>然后会在hexo下的source目录看到tags文件夹，在index.md里输入</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2020-01-10 16:14:33</span><br><span class="line"><span class="built_in">type</span>: <span class="string">"tags"</span></span><br><span class="line">layout: <span class="string">"tags"</span>   <span class="comment">#增加tags的布局</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
 <p>然后再用同样的方法，新建一个categories</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories //新建categories页面</span><br></pre></td></tr></table></figure>
@@ -444,6 +485,9 @@
 
           
 
+  
+    <div class="comments" id="comments">
+    </div>
   
 
 
@@ -782,6 +826,28 @@
 
 
 
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'BMwR75s8jItyAdQHuctqwMlN-gzGzoHsz',
+        appKey: 'UbPpPrRItXHadxv0DV4CVUpu',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
 
 
 
