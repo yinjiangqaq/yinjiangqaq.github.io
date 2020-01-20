@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>HTTPS和HTTP区别分析</title>
-    <url>/2020/01/20/HTTPS%E5%92%8CHTTP%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/</url>
+    <title>HTTPS和HTTP的区别分析</title>
+    <url>/2020/01/20/HTTPS%E5%92%8CHTTP%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>纯面试需要而总结</p>
 <h2 id="HTTPS和HTTP的区别主要如下"><a href="#HTTPS和HTTP的区别主要如下" class="headerlink" title="HTTPS和HTTP的区别主要如下"></a>HTTPS和HTTP的区别主要如下</h2><ul>
 <li><code>https</code>协议需要到ca申请证书，一般免费证书较少，因而需要一定费用。(但是现在在阿里云和腾讯云都可以免费从<code>HTTP</code>转<code>HTTPS</code>。会有免费的CA证书给你下载，时效为一年)</li>
@@ -11,7 +11,7 @@
 <li><code>http</code>的连接很简单，是<strong>无状态的</strong>；<code>HTTPS</code>协议是由<code>SSL+HTTP协议</code>构建的可进行<strong>加密传输、身份认证的网络协议</strong>，比<code>http</code>协议安全。<br>由此可以对比得到，<code>http</code>协议是明文传输，<strong>不确认通信方</strong>，<strong>不保证传输数据完整</strong>的协议。它带来了三大风险：</li>
 <li>窃听风险（eavesdropping）：第三方可以获知通信内容。</li>
 <li>篡改风险（tampering）：第三方可以修改通信内容。</li>
-<li>冒充风险（pretending）：第三方可以冒充他人身份参与通信。<br>用一幅图更好的理解两种协议：<br><img src="/2020/01/20/HTTPS%E5%92%8CHTTP%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/HTTPS.PNG" alt="HTTPS.png"><h2 id="关于HTTP和HTTPS的基本概念"><a href="#关于HTTP和HTTPS的基本概念" class="headerlink" title="关于HTTP和HTTPS的基本概念"></a>关于HTTP和HTTPS的基本概念</h2></li>
+<li>冒充风险（pretending）：第三方可以冒充他人身份参与通信。<br>用一幅图更好的理解两种协议：<br><img src="/2020/01/20/HTTPS%E5%92%8CHTTP%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/HTTPS.PNG" alt="HTTPS.png"><h2 id="关于HTTP和HTTPS的基本概念"><a href="#关于HTTP和HTTPS的基本概念" class="headerlink" title="关于HTTP和HTTPS的基本概念"></a>关于HTTP和HTTPS的基本概念</h2></li>
 <li><em>HTTP :*</em>是互联网上应用最为广泛的一种网络协议，是一个客户端和服务器端请求和应答的标准<code>（TCP）</code>，用于从<code>WWW服务器</code>传输超文本到本地浏览器的传输协议，它可以使浏览器更加高效，使网络传输减少。  </li>
 <li><em>HTTPS：*</em>是以安全为目标的HTTP通道，简单讲是<code>HTTP</code>的安全版，即<code>HTTP</code>下加入<code>SSL层</code>，<code>HTTPS的安全基础是SSL</code>，因此加密的详细内容就需要<code>SSL</code>。  </li>
 </ul>
@@ -33,13 +33,13 @@
 <p>第五步：服务器向客户端发送应答头信息</p>
 <p>第六步：服务器向客户端发送应答头信息后，也会发送一空白行，标示应答头信息发送完毕，接着就以Content-type要求的数据格式发送数据给客户端</p>
 <p>第七步：服务端关闭TCP连接，如果服务器或者客户端增Connection:keep-alive就表示客户端与服务器端继续保存连接，在下次请求时可以继续使用这次的连接</p>
-<h3 id="HTTPS工作流程"><a href="#HTTPS工作流程" class="headerlink" title="HTTPS工作流程"></a>HTTPS工作流程</h3><p><img src="/2020/01/20/HTTPS%E5%92%8CHTTP%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/HTTPSwork.PNG" alt="HTTPSwork.png"><br>第一步：客户使用https的URL访问Web服务器，要求与Web服务器建立SSL连接。</p>
+<h3 id="HTTPS工作流程"><a href="#HTTPS工作流程" class="headerlink" title="HTTPS工作流程"></a>HTTPS工作流程</h3><p><img src="/2020/01/20/HTTPS%E5%92%8CHTTP%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/HTTPSwork.PNG" alt="HTTPSwork.png"><br>第一步：客户使用https的URL访问Web服务器，要求与Web服务器建立SSL连接。</p>
 <p>第二步：Web服务器收到客户端请求后，会将网站的证书信息（证书中包含公钥）传送一份给客户端。</p>
 <p>第三步：客户端的浏览器与Web服务器开始协商SSL连接的安全等级，也就是信息加密的等级。</p>
 <p>第四步：客户端的浏览器根据双方同意的安全等级，建立会话密钥，然后利用网站的公钥将会话密钥加密，并传送给网站。</p>
 <p>第五步：Web服务器利用自己的私钥解密出会话密钥。</p>
 <p>第六步：Web服务器利用会话密钥加密与客户端之间的通信。</p>
-<h3 id="SSL-TLS握手过程"><a href="#SSL-TLS握手过程" class="headerlink" title="SSL/TLS握手过程"></a>SSL/TLS握手过程</h3><p>现在我们具体关注在SSL连接是怎么样建立的<br><img src="/2020/01/20/HTTPS%E5%92%8CHTTP%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/SSL.PNG" alt="SSL.png"><br><strong>Client Hello</strong><br>握手第一步是客户端向服务端发送Client Hello消息。这个消息里包含了一个客户端生成的随机数Random1，客户端支持的加密套件（Support Ciphers）和SSL Version等信息。</p>
+<h3 id="SSL-TLS握手过程"><a href="#SSL-TLS握手过程" class="headerlink" title="SSL/TLS握手过程"></a>SSL/TLS握手过程</h3><p>现在我们具体关注在SSL连接是怎么样建立的<br><img src="/2020/01/20/HTTPS%E5%92%8CHTTP%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/SSL.PNG" alt="SSL.png"><br><strong>Client Hello</strong><br>握手第一步是客户端向服务端发送Client Hello消息。这个消息里包含了一个客户端生成的随机数Random1，客户端支持的加密套件（Support Ciphers）和SSL Version等信息。</p>
 <p><strong>Server Hello</strong><br>第二步是服务端想客户端发送Server Hello消息。此时会生成一份随机数Random2，同时这个消息会从Client Hello传来的Support Ciphers里确定一份加密套件，这个套件决定了后续加密和生成摘要时具体使用哪些算法。</p>
 <p>注意：至此客户端和服务端都拥有了两个随机数（Random1+Random2），这两个随机数会在后续生成对称秘钥时用到。</p>
 <p><strong>Certificate</strong><br>这一步是服务端将自己的证书下发给客户端，让客户端验证自己的身份，客户端验证通过后取出证书中的公钥。</p>
