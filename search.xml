@@ -1,6 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>https和http的区别分析</title>
+    <url>/2020/01/20/https%E5%92%8Chttp%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>纯面试需要而总结</p>
+<h2 id="HTTPS和HTTP的区别主要如下"><a href="#HTTPS和HTTP的区别主要如下" class="headerlink" title="HTTPS和HTTP的区别主要如下"></a>HTTPS和HTTP的区别主要如下</h2><ul>
+<li><code>https</code>协议需要到ca申请证书，一般免费证书较少，因而需要一定费用。(但是现在在阿里云和腾讯云都可以免费从<code>HTTP</code>转<code>HTTPS</code>。会有免费的CA证书给你下载，时效为一年)</li>
+<li>http是<strong>超文本传输协议</strong>，信息是<strong>明文传输</strong>，https则是具有安全性的<strong>SSL加密传输协议。</strong></li>
+<li><code>http</code>和<code>https</code>使用的是完全不同的连接方式，用的端口也不一样，前者是<code>80</code>，后者是<code>443</code>。</li>
+<li><code>http</code>的连接很简单，是<strong>无状态的</strong>；<code>HTTPS</code>协议是由<code>SSL+HTTP协议</code>构建的可进行<strong>加密传输、身份认证的网络协议</strong>，比<code>http</code>协议安全。<br>由此可以对比得到，<code>http</code>协议是明文传输，<strong>不确认通信方</strong>，<strong>不保证传输数据完整</strong>的协议。它带来了三大风险：</li>
+<li>窃听风险（eavesdropping）：第三方可以获知通信内容。</li>
+<li>篡改风险（tampering）：第三方可以修改通信内容。</li>
+<li>冒充风险（pretending）：第三方可以冒充他人身份参与通信。<br>用一幅图更好的理解两种协议：<br><img src="https%E5%92%8Chttp%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/HTTPS.jpg" alt="HTTPS.jpg"><h2 id="关于HTTP和HTTPS的基本概念"><a href="#关于HTTP和HTTPS的基本概念" class="headerlink" title="关于HTTP和HTTPS的基本概念"></a>关于HTTP和HTTPS的基本概念</h2></li>
+<li><em>HTTP：*</em>是互联网上应用最为广泛的一种网络协议，是一个客户端和服务器端请求和应答的标准<code>（TCP）</code>，用于从<code>WWW服务器</code>传输超文本到本地浏览器的传输协议，它可以使浏览器更加高效，使网络传输减少。  </li>
+<li><em>HTTPS：*</em>是以安全为目标的HTTP通道，简单讲是<code>HTTP</code>的安全版，即<code>HTTP</code>下加入<code>SSL层</code>，<code>HTTPS的安全基础是SSL</code>，因此加密的详细内容就需要<code>SSL</code>。  </li>
+</ul>
+<p>HTTPS协议的主要作用可以分为两种：</p>
+<ul>
+<li>一种是建立一个信息安全通道，来保证数据传输的安全</li>
+<li>另一种就是确认网站的真实性。</li>
+</ul>
+<h3 id="HTTP特点"><a href="#HTTP特点" class="headerlink" title="HTTP特点"></a>HTTP特点</h3><ul>
+<li>支持客户/服务器模式。（C/S模式）</li>
+<li>简单快速：客户向服务器请求服务时，只需传送请求方法和路径。请求方法常用的有<code>GET、HEAD、POST。</code>每种方法规定了客户与服务器联系的类型不同。由于<code>HTTP</code>协议简单，使得<code>HTTP</code>服务器的程序规模小，因而通信速度很快。</li>
+<li>灵活：<code>HTTP</code>允许传输<strong>任意类型的数据对象</strong>。正在传输的类型由Content-Type加以标记。</li>
+<li>无连接：无连接的含义是<strong>限制每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接</strong>。采用这种方式可以节省传输时间。</li>
+<li>无状态：<strong>HTTP协议是无状态协议</strong>。无状态是指协议对于<strong>事务处理没有记忆能力</strong>。缺少状态意味着如果后续处理需要前面的信息，则它必须<code>重传</code>，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时它的应答就较快<h3 id="HTTPS特点"><a href="#HTTPS特点" class="headerlink" title="HTTPS特点"></a>HTTPS特点</h3>相比于http，https可以提供更加优质保密的信息，保证了<strong>用户数据的安全性</strong>，此外https同时也一定程度上保护了服务端，使用恶意攻击和伪装数据的成本大大提高。<h2 id="HTTP协议和HTTPS协议的工作过程"><a href="#HTTP协议和HTTPS协议的工作过程" class="headerlink" title="HTTP协议和HTTPS协议的工作过程"></a>HTTP协议和HTTPS协议的工作过程</h2><h3 id="HTTP协议的工作流程"><a href="#HTTP协议的工作流程" class="headerlink" title="HTTP协议的工作流程"></a>HTTP协议的工作流程</h3>第一步：建立TCP/IP连接，客户端与服务器通过Socket三次握手进行连接</li>
+</ul>
+<p>第二步：客户端向服务端发起HTTP请求（例如：POST/login.html http/1.1）</p>
+<p>第三步：客户端发送请求头信息，请求内容，最后会发送一空白行，标示客户端请求完毕</p>
+<p>第四步：服务器做出应答，表示对于客户端请求的应答，例如：HTTP/1.1 200 OK</p>
+<p>第五步：服务器向客户端发送应答头信息</p>
+<p>第六步：服务器向客户端发送应答头信息后，也会发送一空白行，标示应答头信息发送完毕，接着就以Content-type要求的数据格式发送数据给客户端</p>
+<p>第七步：服务端关闭TCP连接，如果服务器或者客户端增Connection:keep-alive就表示客户端与服务器端继续保存连接，在下次请求时可以继续使用这次的连接</p>
+<h3 id="HTTPS工作流程"><a href="#HTTPS工作流程" class="headerlink" title="HTTPS工作流程"></a>HTTPS工作流程</h3><p><img src="https%E5%92%8Chttp%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/HTTPSwork.jpeg" alt="HTTPSwork.jpeg"><br>第一步：客户使用https的URL访问Web服务器，要求与Web服务器建立SSL连接。</p>
+<p>第二步：Web服务器收到客户端请求后，会将网站的证书信息（证书中包含公钥）传送一份给客户端。</p>
+<p>第三步：客户端的浏览器与Web服务器开始协商SSL连接的安全等级，也就是信息加密的等级。</p>
+<p>第四步：客户端的浏览器根据双方同意的安全等级，建立会话密钥，然后利用网站的公钥将会话密钥加密，并传送给网站。</p>
+<p>第五步：Web服务器利用自己的私钥解密出会话密钥。</p>
+<p>第六步：Web服务器利用会话密钥加密与客户端之间的通信。</p>
+<h3 id="SSL-TLS握手过程"><a href="#SSL-TLS握手过程" class="headerlink" title="SSL/TLS握手过程"></a>SSL/TLS握手过程</h3><p>现在我们具体关注在SSL连接是怎么样建立的<br><img src="https%E5%92%8Chttp%E7%9A%84%E5%8C%BA%E5%88%AB%E5%88%86%E6%9E%90/SSL.jpg" alt="SSL.jpg"><br><strong>Client Hello</strong><br>握手第一步是客户端向服务端发送Client Hello消息。这个消息里包含了一个客户端生成的随机数Random1，客户端支持的加密套件（Support Ciphers）和SSL Version等信息。</p>
+<p><strong>Server Hello</strong><br>第二步是服务端想客户端发送Server Hello消息。此时会生成一份随机数Random2，同时这个消息会从Client Hello传来的Support Ciphers里确定一份加密套件，这个套件决定了后续加密和生成摘要时具体使用哪些算法。</p>
+<p>注意：至此客户端和服务端都拥有了两个随机数（Random1+Random2），这两个随机数会在后续生成对称秘钥时用到。</p>
+<p><strong>Certificate</strong><br>这一步是服务端将自己的证书下发给客户端，让客户端验证自己的身份，客户端验证通过后取出证书中的公钥。</p>
+<p><strong>Server Hello Done</strong><br>Server Hello Done通知客户端Server Hello过程结束。</p>
+<p><strong>Certificate Verify</strong><br>客户端收到服务端传来的证书后，先从CA验证该证书的合法性，验证通过后取出证书中的服务端公钥，再生成随机数Random3，再用服务端公钥非对称加密Random3生成PreMaster Key。</p>
+<p>https的服务端必须拥有一个CA认证合法授权的证书，没有这个证书，客户端在访问该服务器时会提醒用户这个网站是不受信任的</p>
+<p><strong>Client Key Exchange</strong><br>上一步中客户端根据服务器传来的公钥生成了PreMaster Key，Client Key Exchange就是将这个PreMaster Key传给服务端，服务端再用自己的私钥解出这个PreMaster Key得到客户端生成的Random3。</p>
+<p>至此，客户端和服务端都拥有<code>Random1+Random2+Random3</code>，那么两边再根据同样的算法就可以生成一份<strong>秘钥</strong>，握手结束后的应用层数据都是使用这个秘钥进行<strong>对称加密</strong>。</p>
+<p>为什么要使用三个随机数？</p>
+<p><strong>这是因为SSL/TLS握手过程的数据都是明文传输的，并且多个随机数种子来生成秘钥不容易被暴力破解。</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://baijiahao.baidu.com/s?id=1629455363537331894&amp;wfr=spider&amp;for=pc" target="_blank" rel="noopener">https://baijiahao.baidu.com/s?id=1629455363537331894&amp;wfr=spider&amp;for=pc</a><br><a href="https://delaprada.com/2020/01/16/https-SSL-TLS%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B/#more" target="_blank" rel="noopener">https://delaprada.com/2020/01/16/https-SSL-TLS%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B/#more</a></p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>计算机网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关于canvas元素和CSS中的flex属性</title>
     <url>/2020/01/19/%E5%85%B3%E4%BA%8Ecanvas%E5%85%83%E7%B4%A0%E5%92%8CCSS%E4%B8%AD%E7%9A%84flex%E5%B1%9E%E6%80%A7/</url>
     <content><![CDATA[<h2 id="canvas元素解析"><a href="#canvas元素解析" class="headerlink" title="canvas元素解析"></a>canvas元素解析</h2><h3 id="什么是canvas？"><a href="#什么是canvas？" class="headerlink" title="什么是canvas？"></a>什么是canvas？</h3><p>HTML5 的 <code>canvas</code> 元素使用 JavaScript 在网页上绘制图像。<br>画布是一个矩形区域，您可以控制其每一像素。<br><code>canvas</code> 拥有多种绘制路径、矩形、圆形、字符以及添加图像的方法</p>
