@@ -48,8 +48,36 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var arr &#x3D; [&#39;Apple&#39;, &#39;pear&#39;, &#39;orange&#39;];</span><br><span class="line">console.log(arr.findIndex(function (s) &#123;</span><br><span class="line">    return s.toLowerCase() &#x3D;&#x3D;&#x3D; s;</span><br><span class="line">&#125;)); &#x2F;&#x2F; 1, 因为&#39;pear&#39;的索引是1</span><br><span class="line"></span><br><span class="line">console.log(arr.findIndex(function (s) &#123;</span><br><span class="line">    return s.toUpperCase() &#x3D;&#x3D;&#x3D; s;</span><br><span class="line">&#125;)); &#x2F;&#x2F; -1</span><br></pre></td></tr></table></figure>
 <h4 id="forEach"><a href="#forEach" class="headerlink" title="forEach"></a>forEach</h4><p>forEach()和map()类似，它也把每个元素依次作用于传入的函数，但不会返回新的数组。forEach()常用于遍历数组，因此，传入的函数不需要返回值：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var arr &#x3D; [&#39;Apple&#39;, &#39;pear&#39;, &#39;orange&#39;];</span><br><span class="line">arr.forEach(console.log); &#x2F;&#x2F; 依次打印每个元素</span><br></pre></td></tr></table></figure>
+<h2 id="Generator函数-async函数"><a href="#Generator函数-async函数" class="headerlink" title="Generator函数 async函数"></a>Generator函数 async函数</h2><p>概念：</p>
+<ul>
+<li><code>Generator</code> 函数是 ES6 提供的一种异步编程解决方案</li>
+<li><code>generator</code> <code>由function *</code>定义（注意多出的<code>*</code>号）;函数内部使用<code>yield</code>表达式，定义不同的内部状态</li>
+<li>调用<code>Generator</code>函数后，该函数并不执行，返回的不是函数运行结果，而是一个指向内部状态的指针对象</li>
+<li>必须调用遍历器对象的<code>next</code>方法，使得指针移向下一个状态，输出返回的结果</li>
+<li><code>next</code>方法返回的是一个对象。它的<code>value</code>属性就是当前<code>yield</code>表达式的值hello，<code>done</code>属性的值<code>false</code>则表示遍历还没有结束（即没有遇到<code>return</code>）。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function* helloWorldGenerator() &#123;</span><br><span class="line">  yield &#39;hello&#39;;</span><br><span class="line">  yield &#39;world&#39;;</span><br><span class="line">  return &#39;ending&#39;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var hw &#x3D; helloWorldGenerator();</span><br><span class="line">hw.next()</span><br><span class="line">&#x2F;&#x2F; &#123; value: &#39;hello&#39;, done: false &#125;</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">&#x2F;&#x2F; &#123; value: &#39;world&#39;, done: false &#125;</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">&#x2F;&#x2F; &#123; value: &#39;ending&#39;, done: true &#125;</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">&#x2F;&#x2F; &#123; value: undefined, done: true &#125;</span><br></pre></td></tr></table></figure>
+<p>next方法可以传参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function* gen(x)&#123;</span><br><span class="line"> const y &#x3D; yield x + 6;</span><br><span class="line"> return y;</span><br><span class="line">&#125;</span><br><span class="line">const g &#x3D; gen(1);</span><br><span class="line">g.next() &#x2F;&#x2F; &#123; value: 7, done: false &#125;</span><br><span class="line">g.next(2) &#x2F;&#x2F; &#123; value: 2, done: true &#125; </span><br><span class="line">&#x2F;&#x2F; next 的参数是作为上个阶段异步任务的返回结果</span><br></pre></td></tr></table></figure>
+<h3 id="异步应用"><a href="#异步应用" class="headerlink" title="异步应用"></a>异步应用</h3><p>因为<code>yield</code>能够中断执行代码的特性，可以帮助我们来控制异步代码的执行顺序。</p>
+<p>例如有两个异步的函数<code>A</code>和<code>B</code>, 并且<code>B</code>的参数是 <code>A</code>的返回值，也就是说，如果 <code>A</code>没有执行结束，我们不能执行<code>B</code>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function* effect() &#123;</span><br><span class="line">  const &#123; param &#125; &#x3D; yield A();</span><br><span class="line">  const &#123; result &#125; &#x3D; yield B(param);</span><br><span class="line">  console.table(result);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;看到结果</span><br><span class="line">const iterator &#x3D; effect()</span><br><span class="line">iterator.next()</span><br><span class="line">iterator.next()</span><br></pre></td></tr></table></figure>
+<h3 id="async和await"><a href="#async和await" class="headerlink" title="async和await"></a>async和await</h3><p>这两个相当于generator函数的另一种语义表示</p>
+<ul>
+<li><code>async</code>函数将Generator函数的<code>星号（*）</code>替换成<code>async</code></li>
+<li>将<code>yield</code>替换成<code>await</code></li>
+</ul>
+<p>async函数对Generator函数的改进体现在以下3点：<br>1.内置执行器</p>
+<p>也就是说<code>async函数</code>的执行，和普通函数一样，只需要一行就可以。不用像<code>Generator</code>函数需要调用<code>next</code>方法才能真正执行。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const asyncReadFile &#x3D; async function () &#123;</span><br><span class="line">  const f1 &#x3D; await readFile(&#39;&#x2F;etc&#x2F;fstab&#39;);</span><br><span class="line">  const f2 &#x3D; await readFile(&#39;&#x2F;etc&#x2F;shells&#39;);</span><br><span class="line">  console.log(f1.toString());</span><br><span class="line">  console.log(f2.toString());</span><br><span class="line">&#125;;</span><br><span class="line">&#x2F;&#x2F;调用只需要一行代码，而且自带执行器，不需要next()</span><br><span class="line">asyncReadFile();</span><br></pre></td></tr></table></figure>
 
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/2975c25e4d71" target="_blank" rel="noopener">https://www.jianshu.com/p/2975c25e4d71</a></p>
+<p>2.更好的语义</p>
+<p><code>async</code>和<code>await</code>比起星号和<code>yield</code>，语义更加清楚了。<code>async</code>表示函数里有<strong>异步操作</strong>，<code>await</code>表示紧跟在后面的表达式需要等待结果。</p>
+<p>3.返回值是promise</p>
+<p><code>async函数</code>的返回值是 <code>Promise 对象</code>，这比 <code>Generator 函数</code>的返回值是<code>Iterator 对象</code>方便多了。你可以用<code>then</code>方法指定下一步的操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">async function getStockPriceByName(name) &#123;</span><br><span class="line">  const symbol &#x3D; await getStockSymbol(name);</span><br><span class="line">  const stockPrice &#x3D; await getStockPrice(symbol);</span><br><span class="line">  return stockPrice;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">getStockPriceByName(&#39;goog&#39;).then(function (result) &#123;</span><br><span class="line">  console.log(result);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>先执行了第一个<code>await</code>后的<code>getStockSymbol(name)</code>函数；得到了股票的名称<code>symbol</code>后，将<code>symbol</code>传给第二个await后面的<code>getStockPrice(symbol)</code>作为参数；最后返回股票价格<code>stockPrice</code>。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/2975c25e4d71" target="_blank" rel="noopener">https://www.jianshu.com/p/2975c25e4d71</a><br><a href="https://delaprada.com/2020/01/14/Generator%E5%87%BD%E6%95%B0-async%E5%87%BD%E6%95%B0/#more" target="_blank" rel="noopener">https://delaprada.com/2020/01/14/Generator%E5%87%BD%E6%95%B0-async%E5%87%BD%E6%95%B0/#more</a></p>
 ]]></content>
       <categories>
         <category>JavaScript</category>
