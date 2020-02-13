@@ -1,6 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>浏览器渲染过程</title>
+    <url>/2020/02/13/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="从键入url到页面显示发生了什么"><a href="#从键入url到页面显示发生了什么" class="headerlink" title="从键入url到页面显示发生了什么"></a>从键入url到页面显示发生了什么</h2><p>这个过程可以大致分为两个部分：网络通信和页面渲染。</p>
+<h3 id="网络通信"><a href="#网络通信" class="headerlink" title="网络通信"></a>网络通信</h3><p>输入url按下回车之后，浏览器会去浏览器缓存中寻找该url的ip；没有的话去系统缓存中找，还是没有的话去路由器缓存中寻找；再没有就去系统host文件中找，还是没有最后只能去请求dns服务器，然后dns给一个ip给浏览器；浏览器根据这个IP地址，向服务器发送HTTP请求。HTTP经过传输层(TCP的三次握手建立连接);网络层(IP协议查询MAC地址);数据链路层(找到对方的MAC地址之后，将数据传送到数据链路层);物理层(传输给服务器);服务器接受数据；服务器响应请求；服务器返回相应的文件(HTML文件等)，接下来就是页面渲染</p>
+<h3 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h3><ul>
+<li>处理 HTML 并构建 DOM 树。(如果遇到style节点 则构建css树（这里不会阻塞dom树的构建）)</li>
+<li>处理 CSS 构建 CSSOM 树。</li>
+<li>将 DOM 与 CSSOM 合并成一个渲染树。</li>
+<li>根据渲染树来布局，计算每个节点的位置。</li>
+<li>调用 GPU 绘制，合成图层，显示在屏幕上。</li>
+</ul>
+<p><img src="/2020/02/13/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/xuanran.png" alt="xuanran.png"></p>
+<p>在构建 CSSOM 树时，会阻塞渲染，直至 CSSOM 树构建完成。并且构建 CSSOM 树是一个十分消耗性能的过程，所以应该尽量保证层级扁平，减少过度层叠，越是具体的 CSS 选择器，执行速度越慢</p>
+<h4 id="浏览器渲染阻塞"><a href="#浏览器渲染阻塞" class="headerlink" title="浏览器渲染阻塞"></a>浏览器渲染阻塞</h4><p>当 HTML 解析到 script 标签时，会暂停构建 DOM，完成后才会从暂停的地方重新开始。也就是说，如果你想首屏渲染的越快，就越不应该在首屏就加载 JS 文件。并且 CSS 也会影响 JS 的执行，只有当解析完样式表才会执行 JS，所以也可以认为这种情况下，CSS 也会暂停构建 DOM。<br>为了避免解析到script标签的时候就发生浏览器渲染阻塞，我们可以给script标签加上async或者defer属性，这两个属性使得script标签不会阻塞DOM的渲染，<strong>能够异步加载script脚本，不阻塞DOM渲染。</strong></p>
+<h5 id="defer"><a href="#defer" class="headerlink" title="defer"></a>defer</h5><p>如果<code>script</code>标签设置了该属性，浏览器则会异步地下载该文件并且不会影响到后续DOM的渲染。如果有多个设置了<code>defer</code>的<code>script</code>标签存在，则会按照顺序执行所有的script。（defer按script脚本的声明顺序执行）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;script defer type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;&#x2F;script2</span><br><span class="line">.js&quot;&gt;&#x2F;&lt;script&gt;</span><br><span class="line">&lt;script defer type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;&#x2F;script1</span><br><span class="line">.js&quot;&gt;&#x2F;&lt;script&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="async"><a href="#async" class="headerlink" title="async"></a>async</h4><p><code>async</code>的设置，会使得script脚本异步加载。<code>async</code>的执行，不会按照script在页面中的顺序来执行，而是谁先加载完谁执行（此处与defer有所不同）。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;script async type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;&#x2F;script2</span><br><span class="line">.js&quot;&gt;&#x2F;&lt;script&gt;</span><br><span class="line">&lt;script async type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;&#x2F;script1</span><br><span class="line">.js&quot;&gt;&#x2F;&lt;script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>对于<code>link</code>标签和<code>@import</code>,这是引入CSS的两种方式，当解析HTML解析到<code>Link</code>标签时，会同步加载CSS文件，浏览器会多开一个线程，而<code>@import</code>，会等页面构建完，也就是加载完HTML文件之后再加载这个CSS文件。<code>link</code>标签的优先级比<code>@import</code>高</p>
+<h4 id="DOM树与渲染树"><a href="#DOM树与渲染树" class="headerlink" title="DOM树与渲染树"></a>DOM树与渲染树</h4><p> DOM树是由HTML文件中的标签排列组成，渲染树是在DOM树中加入CSS或HTML中的style样式而形成。渲染树只包含需要显示在页面中的DOM元素，像<code>&lt;head&gt;</code>元素或<code>display</code>属性值为<code>none</code>的元素都不在渲染树中。</p>
+<h2 id="回流和重绘"><a href="#回流和重绘" class="headerlink" title="回流和重绘"></a>回流和重绘</h2><p> 重绘和回流是渲染步骤中的一小节，但是这两个步骤对于性能影响很大。</p>
+<ul>
+<li><p>重绘是当节点需要更改外观而不会影响布局的，比如改变  <code>color</code>就叫称为重绘</p>
+</li>
+<li><p>回流是布局或者几何属性需要改变就称为回流</p>
+<p>回流必定会发生重绘，重绘不一定会引发回流。回流所需的成本比重绘高的多，改变深层次的节点很可能导致父节点的一系列回流。</p>
+<h3 id="减少回流和重绘"><a href="#减少回流和重绘" class="headerlink" title="减少回流和重绘"></a>减少回流和重绘</h3></li>
+<li><p>使用 <code>translate</code> 替代<code>top</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> &lt;div class&#x3D;&quot;test&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">&lt;style&gt;</span><br><span class="line">  .test &#123;</span><br><span class="line">    position: absolute;</span><br><span class="line">    top: 10px;</span><br><span class="line">    width: 100px;</span><br><span class="line">    height: 100px;</span><br><span class="line">    background: red;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">  setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">    &#x2F;&#x2F; 引起回流</span><br><span class="line">    document.querySelector(&#39;.test&#39;).style.top &#x3D; &#39;100px&#39;</span><br><span class="line">  &#125;, 1000)</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 <code>visibility</code>替换 <code>display: none</code>，因为前者只会引起重绘，后者会引发回流（改变了布局）</li>
+<li>把 DOM 离线后修改，比如：先把 DOM 给 display:none (有一次 Reflow)，然后你修改 100 次，然后再把它显示出来</li>
+<li>不要把 DOM 结点的属性值放在一个循环里当成循环里的变量<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">for (let i &#x3D; 0; i &lt; 1000; i++) &#123;</span><br><span class="line">  &#x2F;&#x2F; 获取 offsetTop 会导致回流，因为需要去获取正确的值</span><br><span class="line">  console.log(document.querySelector(&#39;.test&#39;).style.offsetTop)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>不要使用<code>table</code> 布局，可能很小的一个小改动会造成整个 <code>table</code>的重新布局</li>
+<li>动画实现的速度的选择，动画速度越快，回流次数越多，也可以选择使用 <code>requestAnimationFrame</code></li>
+<li>CSS 选择符从右往左匹配查找，避免 DOM 深度过深,　css选择器的嵌套层级最好不要超过三级</li>
+<li>将频繁运行的动画变为图层，图层能够阻止该节点回流影响别的元素。比如对于<code>video</code>标签，浏览器会自动将该节点变为图层。</li>
+</ul>
+</li>
+</ul>
+<h2 id="图层"><a href="#图层" class="headerlink" title="图层"></a>图层</h2><p>一般来说，可以把普通文档流看成一个图层。特定的属性可以生成一个新的图层。<strong>不同的图层渲染互不影响</strong>，所以对于某些频繁需要渲染的建议单独生成一个新图层，提高性能。<strong>但也不能生成过多的图层，会引起反作用。</strong><br>通过以下几个常用属性可以生成新图层</p>
+<ul>
+<li>3D 变换：<code>translate3d</code>、<code>translateZ</code></li>
+<li><code>will-change</code></li>
+<li><code>video</code>、<code>iframe</code> 标签</li>
+<li>通过动画实现的 <code>opacity</code> 动画转换</li>
+<li><code>position: fixed</code></li>
+</ul>
+]]></content>
+      <categories>
+        <category>浏览器</category>
+      </categories>
+      <tags>
+        <tag>浏览器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>防抖与节流</title>
     <url>/2020/02/09/%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>你是否在日常开发中遇到一个问题，在滚动事件中需要做个复杂计算或者实现一个按钮的防二次点击操作。</p>
