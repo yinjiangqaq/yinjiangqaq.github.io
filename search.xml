@@ -1,12 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>关于cookie和session的深究</title>
+    <url>/2020/03/16/%E5%85%B3%E4%BA%8Ecookie%E5%92%8Csession%E7%9A%84%E6%B7%B1%E7%A9%B6/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接二连三受挫，想做一篇总结篇吧。  </p>
+<h2 id="cookie和session的区别"><a href="#cookie和session的区别" class="headerlink" title="cookie和session的区别"></a>cookie和session的区别</h2><h3 id="cookie是客户端保持状态的方案，session是服务端保持状态的方案"><a href="#cookie是客户端保持状态的方案，session是服务端保持状态的方案" class="headerlink" title="cookie是客户端保持状态的方案，session是服务端保持状态的方案"></a>cookie是客户端保持状态的方案，session是服务端保持状态的方案</h3><p>cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cookies 。<br>也就是说，cookie是服务端生成的，通过HTTP响应头向客户端发送，客户端浏览器解析拿到这个cookie，会保存为一个本地文件，并在后面与这一台服务器发送的任何请求，都会携带这个cookie。</p>
+<p>那为什么要携带这个cookie呢，因为cookie的作用就是为了解决HTTP协议无状态的缺陷所作的努力。cookie的内容主要包括：名字，值，过期时间，路径和域。<strong>(可以理解成键值对，外加一些其他的属性)</strong>一般用户的敏感信息就会存在value字段。每次请求携带cookie相当于客户端在告诉服务器，现在是谁谁谁和你通信.所以说，<strong>cookie是客户端保持状态的方案</strong><br><img src="/2020/03/16/%E5%85%B3%E4%BA%8Ecookie%E5%92%8Csession%E7%9A%84%E6%B7%B1%E7%A9%B6/cookie.png" alt="cookie.png"><br>图一、   cookie的一些属性<br>cookie又分为两种：</p>
+<ul>
+<li><p>会话cookie：不设置过期时间，只要关闭浏览器，就会消失。生命周期是浏览器会话期间，一般保存在内存上</p>
+</li>
+<li><p>持久性cookie：设置过期时间，<strong>会保存在用户硬盘上</strong>，同一浏览器可以访问，直到到了过期时间</p>
+</li>
+</ul>
+<p>既然cookie是服务端生成的，那怎么生成呢？<br>服务器通过在HTTP的响应头(第一次访问网站服务器的reponse头)中加上一行特殊的指示以提示浏览器按照指示生成相应的cookie<br>服务端那边写代码给HTTP响应头加入<code>set-Cookie</code>字段（cookie其实跟键值对差不多)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;HTTP响应头</span><br><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Content-type: text&#x2F;html</span><br><span class="line">Set-Cookie: foo&#x3D;10</span><br><span class="line">Set-Cookie: bar&#x3D;20; Expires&#x3D;Fri, 30 Sep 2011 11:48:00 GMT</span><br><span class="line">... rest  of the response</span><br></pre></td></tr></table></figure>
+<p>这里两个cookie foo = 10和bar = 20被存储在浏览器中。第二个将在9月30日到期。在随后的每个请求中，浏览器都会将cookie发送回服务器。</p>
+<p>后面浏览器给服务器发送的请求的时候，请求头(会携带上cookie)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET &#x2F;spec.html HTTP&#x2F;1.1</span><br><span class="line">Host: www.example.com</span><br><span class="line">Cookie: foo&#x3D;10; bar&#x3D;20</span><br><span class="line">Accept: *&#x2F;*</span><br></pre></td></tr></table></figure>
+
+<p>那客户端浏览器可以生成cookie嘛？<br>答案是可以的。我们可以在chrome的控制台上，加入如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">document.cookie &#x3D; &#39;age &#x3D;18;max-age&#x3D;1000&#39;</span><br></pre></td></tr></table></figure>
+<p>然后你就可以看到cookie选项多了个<code>age=18</code>的cookie。然后这个cookie的长度，或者说size就是字符串’age18’的length，为5.其实还是挺符合定义，cookie是服务器存在本地机器上的<strong>一小段文本</strong><br>那前端既然可以用JavaScript创建cookie，那怎么清除掉呢。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">delCookies(name)&#123;</span><br><span class="line"></span><br><span class="line">var exp &#x3D; new Date();</span><br><span class="line"></span><br><span class="line">exp.setTime(exp.getTime() - 1);</span><br><span class="line"></span><br><span class="line">var cval &#x3D; this.getCookie(name);</span><br><span class="line"></span><br><span class="line">if(cval !&#x3D; null)&#123;</span><br><span class="line"></span><br><span class="line">document.cookie &#x3D; name + &quot;&#x3D;&quot; +cval + &quot;;expires&#x3D;&quot; + exp.toGMTString()</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于session<br>session是一种保持上下文信息的机制，它是针对每一个用户的，变量的值保存在服务端，通过sessionid来区分不同的用户，session是以<code>cookie或url重写</code>为基础的.<br>也就是这个sessionid是保存在客户端的，那用什么方法传给客户端呢，一种是通过cookie，顾名思义把sessionid写在cookie里面（然后通过请求携带cookie可以把用户的sessionid告诉给服务器）<br>如果浏览器禁止cookie的话，我们可以通过url重写，就是把sessionid写在url路径的后面。这样可以，那这样服务器就可以解析url地址拿到用户的sessionid</p>
+<p>session的工作原理：<br>client———&gt;1.request————————-&gt;server<br>          2. session_start();<br>   |&lt;————-3.reponse(SESSION_ID)&lt;——–|<br>   |————-&gt;4.request(SESSION_ID)———&gt;|<br>                       5. session_start();<br>   |&lt;————-6.reponse(SESSION_ID)&lt;———|<br>   |————-&gt;7. request(SESSION_ID + logout)–&gt;|<br>                      8. session_destroy();<br>   |&lt;————-9. reponse(删除cookie文件)&lt;——-|<br>具体的流程：  </p>
+<p>1.client打开网页，向server发出请求，client上由于没有相应的cookie文件存在，在请求中不输送SESSION_ID<br>2.服务器在接受到client的请求后，通过执行session_start()函数开始进行session的处理， 首先确认请求中有没有SESSION_ID，如果没有的话，发行一个新的SESSION_ID；如果有的话， 则调用那个存有SESSION_ID的文件，并把信息写入$_SESSION里去，并存入以sess_开头的文件里。<br>把写入信息的$_SESSION参数发回给client，client在GET服务器发来的信息后，把这些信息保存在cookie里。<br>3.client把cookie里的SESSION_ID一起写入header后再次向server发出请求。重复1-3的操作<br>4.client发出登出请求<br>5.服务器接受请求后，通过执行session_destroy()函数开始删除session文件处理<br>服务器向client发出删除保存在client上的cookie文件的命令:   setcookie(session_name(), ”, time()-60, ‘/’);  </p>
+<p>看到上面的原理之后，我们会明白session其实一般情况下是不可以跨窗口使用的，但是我们可以通过把session放在持久性的cookie里，也就是给cookie加一个过期时间，然后我们可以在新窗口读取这个cookie实现跨窗口的使用。</p>
+<h3 id="隐私策略不同"><a href="#隐私策略不同" class="headerlink" title="隐私策略不同"></a>隐私策略不同</h3><p>Cookie存储在客户端阅读器中，对客户端是可见的，客户端的一些程序可能会窥探、复制以至修正Cookie中的内容。而Session存储在服务器上，对客户端是透明的，不存在敏感信息泄露的风险。</p>
+<h3 id="服务器的压力不同"><a href="#服务器的压力不同" class="headerlink" title="服务器的压力不同"></a>服务器的压力不同</h3><p>Session是保管在服务器端的，每个用户都会产生一个Session。假如并发访问的用户十分多，会产生十分多的Session，耗费大量的内存。因而像Google、Baidu、Sina这样并发访问量极高的网站，是不太可能运用Session来追踪客户会话的。<br>而Cookie保管在客户端，不占用服务器资源。假如并发阅读的用户十分多，Cookie是很好的选择。关于Google、Baidu、Sina来说，Cookie或许是唯一的选择。</p>
+<h3 id="跨域支持上不同"><a href="#跨域支持上不同" class="headerlink" title="跨域支持上不同"></a>跨域支持上不同</h3><p>Cookie支持跨域名访问，例如将cookie的<code>domain</code>属性设置为“.biaodianfu.com”，则以“.biaodianfu.com”为后缀的一切域名均能够访问该Cookie。跨域名Cookie如今被普遍用在网络中，例如Google、Baidu、Sina等。而Session则不会支持跨域名访问。Session仅在他所在的域名内有效。</p>
+<h3 id="存取方式的不同"><a href="#存取方式的不同" class="headerlink" title="存取方式的不同"></a>存取方式的不同</h3><p>Cookie中只能保管ASCII字符串，假如需求存取Unicode字符或者二进制数据，需求先进行编码。Cookie中也不能直接存取Java对象<br>而Session中能够存取任何类型的数据，包括而不限于String、Integer、List、Map等。Session中也能够直接保管Java Bean乃至任何Java类，对象等，运用起来十分便当。能够把Session看做是一个Java容器类。</p>
+<h3 id="关于二者的使用场景"><a href="#关于二者的使用场景" class="headerlink" title="关于二者的使用场景"></a>关于二者的使用场景</h3><p>   cookie应用场景：①判断用户是否登录过网站； ②用来记录购物车或者记录用户使用偏好来制定推送(记录用户的行为)；<br>    session应用场景：①登录验证信息</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://blog.csdn.net/zhuwei1035838807/article/details/79752683?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task" target="_blank" rel="noopener">关于Session的使用场景案例</a>  </p>
+]]></content>
+      <categories>
+        <category>浏览器</category>
+      </categories>
+      <tags>
+        <tag>浏览器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>promise解决请求延迟的问题</title>
+    <url>/2020/03/05/promise%E8%A7%A3%E5%86%B3%E8%AF%B7%E6%B1%82%E5%BB%B6%E8%BF%9F%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>利用Promise实现数据多个请求加载完成时执行某个方法<br>在实际开发中常常有些业务的数据是来自多个接口的，因为ajax是异步，这样就导致我们需要判断是否请求到了数据然后在做其他的逻辑，在Promise没有出现之前，通常我们的解决方法是，第一粗暴的改异步为同步，但这样会造成阻塞，异步好像又失去了意义，第二也就是大家常用的解决办法用回调既一个异步执行完成后在执行下一个请求，这样看比第一种要好太多了，但是问题又来了，延迟延迟延迟，请求越多最后的那个请求延迟就会越严重，而且这样请求多了之后逻辑就会变得很乱。。。痛苦不堪，还好es6带来的Promise正好能解决这个东西，关于<code>Promise</code>具体详情请百度，这里大致只说三个东西，<code>resolve</code>, <code>reject</code>，<code>Promise.all</code> 对应成功执行，失败执行，返回全部状态，实例贴代码 很容易理解。  </p>
+<p>然鹅我们async的话，各种await之间也要等到上一个await执行完毕之后，才会执行下一个await，所以还是解决不了延迟的情况，所以我们采用ES6中的promise，来解决这个问题</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const promist &#x3D; new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    this.$http.jsonp(getRegionNameByIdApi, &#123; params: &#123; regionId: dqarr &#125; &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        this.dqarr &#x3D; res.body.data</span><br><span class="line">        resolve(res.body.data)</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">const promist1 &#x3D; new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    this.$http.jsonp(getPartnerNameByIdApi, &#123; params: &#123; partnerId: sharr &#125; &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        this.sharr &#x3D; res.body.data</span><br><span class="line">        resolve(res.body.data)</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">Promise.all([promist, promist1]).then((resultList) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;results:&#39;, resultList)</span><br><span class="line">    resultList[0].map((item) &#x3D;&gt; &#123;</span><br><span class="line">        this.tableData.map((val) &#x3D;&gt; &#123;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.regionId) &#123;</span><br><span class="line">                val.region_name &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.areaId) &#123;</span><br><span class="line">                val.area_name &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.shopId) &#123;</span><br><span class="line">                val.shopName &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (resultList[1][val.partnerId]) &#123;</span><br><span class="line">                val.partner_name &#x3D; resultList[1][val.partnerId]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">    this.$set(this.tableData, this.tableData)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>JavaScript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Vue中的computed属性和nextTick方法</title>
     <url>/2020/02/23/Vue%E4%B8%AD%E7%9A%84computed%E5%B1%9E%E6%80%A7%E5%92%8CnextTick%E6%96%B9%E6%B3%95/</url>
     <content><![CDATA[<h2 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h2><h3 id="computed属性的实现原理"><a href="#computed属性的实现原理" class="headerlink" title="computed属性的实现原理"></a>computed属性的实现原理</h3><ul>
 <li>Vue实例初始化时，给data的每个属性<code>(dataKey)</code>都添加getter和setter方法  </li>
 <li>计算属性<code>computed</code>初始化时，提供的函数将作为对应属性<code>(computedKey)</code>的getter方法<br>其中，computed属性采用<strong>函数式声明</strong> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">computedKey: function()&#123;</span><br><span class="line">       return this.dataKey+&#39;change&#39;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-<li>当首次获取计算属性的值是，dep开始收集依赖，即收集到dataKey和computedKey的依赖关系，也就是上面的<code>this.datakey+&#39;change&#39;</code>;<br>在dataKey变化时，此时会调用dataKey的getter方法，通过dep收集的依赖，可以判定出data与<code>computed</code>对应数据的依赖关系<br>此时可以做到，在data发生变化时，<code>computed</code>属性数据也发生变化</li>
+<li>当首次获取计算属性的值是，dep开始收集依赖，即收集到dataKey和computedKey的依赖关系，也就是上面的<code>this.datakey+&#39;change&#39;</code>;<br>在dataKey变化时，此时会调用dataKey的getter方法，通过dep收集的依赖，可以判定出data与<code>computed</code>对应数据的依赖关系<br>此时可以做到，在data发生变化时，<code>computed</code>属性数据也发生变化.我们要记住的是，computed中不推荐有任何数据的改变，最好只进行计算。如果你非要进行数据的操作那么可以把监听写在<code>watch</code>（注意deep深拷贝）或者使用<code>computed</code>的<code>get</code>和<code>set</code>如下图：<br><img src="/2020/02/23/Vue%E4%B8%AD%E7%9A%84computed%E5%B1%9E%E6%80%A7%E5%92%8CnextTick%E6%96%B9%E6%B3%95/computed.png" alt="computed.png"></li>
 </ul>
 <h3 id="computed属性的用法"><a href="#computed属性的用法" class="headerlink" title="computed属性的用法"></a>computed属性的用法</h3><p>目的：是为了避免模板中加入太多的计算公式，不够精炼，而且computed属性比较节约<br>官网中的写法：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;div id&#x3D;&quot;example&quot;&gt;</span><br><span class="line">  &lt;p&gt;Original message: &quot;&#123;&#123; message &#125;&#125;&quot;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;p&gt;Computed reversed message: &quot;&#123;&#123; reversedMessage &#125;&#125;&quot;&lt;&#x2F;p&gt;</span><br><span class="line">&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
@@ -398,8 +452,8 @@
         <category>HTML</category>
       </categories>
       <tags>
-        <tag>CSS</tag>
         <tag>JavaScript</tag>
+        <tag>CSS</tag>
         <tag>HTML</tag>
       </tags>
   </entry>
