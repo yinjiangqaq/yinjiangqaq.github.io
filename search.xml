@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>腾讯云创建云函数以及部署</title>
+    <url>/2020/04/03/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%88%9B%E5%BB%BA%E4%BA%91%E5%87%BD%E6%95%B0%E4%BB%A5%E5%8F%8A%E9%83%A8%E7%BD%B2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做一个小程序项目，有些接口需要自己实现，作为前端开发人员，对服务器方面一窍不通，所以发现了腾讯云可以提供云开发和云函数(SCF)来实现一站式部署。<br>SCF简而言之，就是自己写好接口代码，放在腾讯云上，腾讯云暴露一个api给你使用。而我主要讲一下使用vscode创建云函数的过程。因为刚好代码之类的也是可以在vscode写的。</p>
+<h2 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h2><p><a href="https://cloud.tencent.com/document/product/583/37511" target="_blank" rel="noopener">详情可以参考官方文档vscode创建云函数</a></p>
+<p>但是有几个有点模糊的点我补充一下。</p>
+<ul>
+<li>根据提示依次输入账号的 APPID，SecretId 及 SecretKey 信息，作为插件调用云 API 时的认证信息。这里的账号，是我们需要自己新建的角色<code>QCS_SCFExcuteRole</code>并且要进行权限的配置，然后才可以看到对应的APPID，SecretId 及 SecretKey</li>
+<li>然后在vscode本地调试代码运行的时候，选择的是api网关模板</li>
+</ul>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>当我们vscode本地上传函数到云端时，我们会在自己的腾讯云函数服务控制台看到我们上传的函数，但是有些地方需要做一些更改。<br>在SCF控制台（云函数控制台），点击我们创建的云函数，点击触发方式，点击api服务名，跳转到<code>api网关服务控制台</code>，选择管理API，点击编辑操作，在前端配置栏<strong>开启CORS</strong>,解决后面调用窗口的<strong>跨域问题</strong>。<br><img src="/2020/04/03/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%88%9B%E5%BB%BA%E4%BA%91%E5%87%BD%E6%95%B0%E4%BB%A5%E5%8F%8A%E9%83%A8%E7%BD%B2/cors.png" alt="cors.png"><br>然后完成后续配置操作之后，我们需要把api再<strong>发布一次，发布一次，发布一次</strong>，然后api便可以正常访问了。<br><img src="/2020/04/03/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%88%9B%E5%BB%BA%E4%BA%91%E5%87%BD%E6%95%B0%E4%BB%A5%E5%8F%8A%E9%83%A8%E7%BD%B2/release.png" alt="release.png"> </p>
+]]></content>
+      <categories>
+        <category>小程序、腾讯云</category>
+      </categories>
+      <tags>
+        <tag>小程序、腾讯云</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浏览器安全方面的</title>
+    <url>/2020/03/23/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AE%89%E5%85%A8%E6%96%B9%E9%9D%A2%E7%9A%84/</url>
+    <content><![CDATA[<h2 id="XSS攻击"><a href="#XSS攻击" class="headerlink" title="XSS攻击"></a>XSS攻击</h2><p>XSS攻击的全称是跨站脚本攻击，通过注入恶意的JavaScript代码进行攻击。</p>
+<p>分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为DOM型，反射型和存储型</p>
+<ul>
+<li>DOM-Based型：属于非持久型的XSS攻击，不需要服务端的参与，主要是因为一些前端代码的漏洞导致的，DOM 中的内联事件监听器，如 <code>location、onclick、onerror、onload、onmouseover</code>等，<code>a</code> 标签的 <code>href</code> 属性，img 的 <code>src</code>，JavaScript 的 <code>eval()</code>、<code>setTimeout()</code>、<code>setInterval()</code> 等，<strong>都能把字符串作为代码运行</strong>，拼接数据时需要注意。<code>innerHTML，outerHTML，document.write</code>与用户输入有关联时需要注意</li>
+</ul>
+<ul>
+<li>反射型： 也属于非持久型的XSS，需要经过服务器，但是不经过数据库。当用户打开带有恶意代码的URL，网站服务端将恶意代码从URL中取出，拼接再HTML中返回给浏览器。常见于网站搜索，跳转等等</li>
+</ul>
+<ul>
+<li>存储型：属于持久型XSS，需要经过服务器和数据库。当用户将恶意代码提交到了<strong>目标数据库</strong>，下次用户打开网站时，网站服务端把恶意代码从数据库取出，拼接再HTML中返回给浏览器。常见于带有用户保存数据的网站功能，如论坛发帖，商品评论，用户私信。（基本都是表单类的）</li>
+</ul>
+]]></content>
+      <categories>
+        <category>浏览器</category>
+      </categories>
+      <tags>
+        <tag>浏览器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关于cookie和session的深究</title>
     <url>/2020/03/16/%E5%85%B3%E4%BA%8Ecookie%E5%92%8Csession%E7%9A%84%E6%B7%B1%E7%A9%B6/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接二连三受挫，想做一篇总结篇吧。  </p>
@@ -45,8 +86,12 @@
     <title>promise解决请求延迟的问题</title>
     <url>/2020/03/05/promise%E8%A7%A3%E5%86%B3%E8%AF%B7%E6%B1%82%E5%BB%B6%E8%BF%9F%E7%9A%84%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>利用Promise实现数据多个请求加载完成时执行某个方法<br>在实际开发中常常有些业务的数据是来自多个接口的，因为ajax是异步，这样就导致我们需要判断是否请求到了数据然后在做其他的逻辑，在Promise没有出现之前，通常我们的解决方法是，第一粗暴的改异步为同步，但这样会造成阻塞，异步好像又失去了意义，第二也就是大家常用的解决办法用回调既一个异步执行完成后在执行下一个请求，这样看比第一种要好太多了，但是问题又来了，延迟延迟延迟，请求越多最后的那个请求延迟就会越严重，而且这样请求多了之后逻辑就会变得很乱。。。痛苦不堪，还好es6带来的Promise正好能解决这个东西，关于<code>Promise</code>具体详情请百度，这里大致只说三个东西，<code>resolve</code>, <code>reject</code>，<code>Promise.all</code> 对应成功执行，失败执行，返回全部状态，实例贴代码 很容易理解。  </p>
-<p>然鹅我们async的话，各种await之间也要等到上一个await执行完毕之后，才会执行下一个await，所以还是解决不了延迟的情况，所以我们采用ES6中的promise，来解决这个问题</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const promist &#x3D; new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    this.$http.jsonp(getRegionNameByIdApi, &#123; params: &#123; regionId: dqarr &#125; &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        this.dqarr &#x3D; res.body.data</span><br><span class="line">        resolve(res.body.data)</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">const promist1 &#x3D; new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    this.$http.jsonp(getPartnerNameByIdApi, &#123; params: &#123; partnerId: sharr &#125; &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        this.sharr &#x3D; res.body.data</span><br><span class="line">        resolve(res.body.data)</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">Promise.all([promist, promist1]).then((resultList) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;results:&#39;, resultList)</span><br><span class="line">    resultList[0].map((item) &#x3D;&gt; &#123;</span><br><span class="line">        this.tableData.map((val) &#x3D;&gt; &#123;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.regionId) &#123;</span><br><span class="line">                val.region_name &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.areaId) &#123;</span><br><span class="line">                val.area_name &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.shopId) &#123;</span><br><span class="line">                val.shopName &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (resultList[1][val.partnerId]) &#123;</span><br><span class="line">                val.partner_name &#x3D; resultList[1][val.partnerId]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">    this.$set(this.tableData, this.tableData)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+<p>然鹅我们async的话，各种await之间也要等到上一个await执行完毕之后，才会执行下一个await，所以还是解决不了延迟的情况，所以我们采用ES6中的promise，来解决并行执行的问题</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const promist &#x3D; new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    this.$http.jsonp(getRegionNameByIdApi, &#123; params: &#123; regionId: dqarr &#125; &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        this.dqarr &#x3D; res.body.data</span><br><span class="line">        resolve(res.body.data)</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">const promist1 &#x3D; new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    this.$http.jsonp(getPartnerNameByIdApi, &#123; params: &#123; partnerId: sharr &#125; &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        this.sharr &#x3D; res.body.data</span><br><span class="line">        resolve(res.body.data)</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">Promise.all([promist, promist1]).then((resultList) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;results:&#39;, resultList)</span><br><span class="line">    resultList[0].map((item) &#x3D;&gt; &#123;</span><br><span class="line">        this.tableData.map((val) &#x3D;&gt; &#123;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.regionId) &#123;</span><br><span class="line">                val.region_name &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.areaId) &#123;</span><br><span class="line">                val.area_name &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (item.regionId &#x3D;&#x3D;&#x3D; val.shopId) &#123;</span><br><span class="line">                val.shopName &#x3D; item.regionName</span><br><span class="line">            &#125;</span><br><span class="line">            if (resultList[1][val.partnerId]) &#123;</span><br><span class="line">                val.partner_name &#x3D; resultList[1][val.partnerId]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">    this.$set(this.tableData, this.tableData)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Promise实现任务顺序执行"><a href="#Promise实现任务顺序执行" class="headerlink" title="Promise实现任务顺序执行"></a>Promise实现任务顺序执行</h2><p>在<code>.then</code>里要<code>return</code>一个<code>new Promise</code>，这样后续才能继续使用<code>.then</code>执行后续操作：  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var result&#x3D;new Promise(function(resolve,reject)&#123;</span><br><span class="line">	setTimeout(function()&#123;</span><br><span class="line">		resolve(&quot;one&quot;);</span><br><span class="line">	&#125;,3000)</span><br><span class="line">&#125;).then(function(data)&#123;</span><br><span class="line">	console.log(data);</span><br><span class="line">	return new Promise(function(resolve,reject)&#123;</span><br><span class="line">		setTimeout(function()&#123;</span><br><span class="line">			resolve(&quot;two&quot;);</span><br><span class="line">		&#125;,3000)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;).then(function(data)&#123;</span><br><span class="line">	console.log(data);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>JavaScript</category>
       </categories>
