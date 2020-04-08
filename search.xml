@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Flutter开发中遇到的小问题</title>
+    <url>/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>flutter作为谷歌新推的跨平台的开发框架，有很大的发展前景。我主要归纳一些我在开发过程中遇到的难点,持续更新中…</p>
+<h2 id="flutter卡在package-get的解决方案"><a href="#flutter卡在package-get的解决方案" class="headerlink" title="flutter卡在package get的解决方案"></a>flutter卡在package get的解决方案</h2><p>主要的问题是国内有墙，需要一些国内的镜像才可以下载到相应的包。我们可以给我们的电脑增加如下的环境变量：  </p>
+<ul>
+<li>Linux或Mac<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PUB_HOSTED_URL&#x3D;https:&#x2F;&#x2F;pub.flutter-io.cn</span><br><span class="line"></span><br><span class="line">export FLUTTER_STORAGE_BASE_URL&#x3D;https:&#x2F;&#x2F;storage.flutter-io.cn</span><br></pre></td></tr></table></figure></li>
+<li>Windows<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUB_HOSTED_URL &#x3D;&#x3D;&#x3D;&#x3D;&#x3D; https:&#x2F;&#x2F;pub.flutter-io.cn</span><br><span class="line"></span><br><span class="line">FLUTTER_STORAGE_BASE_URL &#x3D;&#x3D;&#x3D;&#x3D;&#x3D; https:&#x2F;&#x2F;storage.flutter-io.cn</span><br></pre></td></tr></table></figure>
+然后在终端运行<code>flutter doctor</code>命令，后续的<code>package get</code> 应该就没问题了</li>
+</ul>
+<h2 id="Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案"><a href="#Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案" class="headerlink" title="Flutter报错Waiting for another flutter command to release the startup lock解决方案"></a>Flutter报错Waiting for another flutter command to release the startup lock解决方案</h2><p>解决方案： 打开<code>flutter</code><strong>安装目录</strong> <code>/bin/cache</code>，找到<code>lockfile</code>文件，把这个文件删除，问题就解决了</p>
+<h2 id="flutter中package包版本冲突的问题"><a href="#flutter中package包版本冲突的问题" class="headerlink" title="flutter中package包版本冲突的问题"></a>flutter中package包版本冲突的问题</h2><p>当你的项目需要安装的依赖包越多，遇到包冲突可能性就越大，尤其是当依赖的包有重大更新时<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/conflict.png" alt="conflict.png"></p>
+<p>上面可以看到是<code>xml</code>跟<code>intl_translation</code>两个包有冲突，因为他们依赖两个不同的<code>petitparser</code>包。打开<code>pubspec.yaml</code>看到:<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/depend.png" alt="depend.png"></p>
+<p>解决办法：<br>通过将两者依赖包版本号改为：any<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/any.png" alt="any.png"><br>击<code>flutter packages get</code>重新获取包，这样就会自动去匹配适合两者的包，然后我们会看到<code>Got dependencies</code>的结果，但是，问题还没有解决，我们需要在根目录下找到<code>pubspec.lock.yarm</code>文件，然后看到冲突的那两个包对应的版本号，这是通过匹配得到的适配的版本号，然后把在<code>pubspec.yaml</code>中的<code>any</code>改成对应的版本，就可以了。<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/rightVer.png" alt="rightVer.png"></p>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+      <tags>
+        <tag>Flutter</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>异步及异步编程的解决方案</title>
     <url>/2020/04/07/%E5%BC%82%E6%AD%A5%E5%8F%8A%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
     <content><![CDATA[<hr>

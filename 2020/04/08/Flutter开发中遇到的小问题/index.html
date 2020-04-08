@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Flutter," />
 
 
 
@@ -79,12 +79,22 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="yinjiangQAQ Blog">
-<meta property="og:url" content="http://yoursite.com/categories/Node/index.html">
+<meta name="description" content="前言flutter作为谷歌新推的跨平台的开发框架，有很大的发展前景。我主要归纳一些我在开发过程中遇到的难点,持续更新中… flutter卡在package get的解决方案主要的问题是国内有墙，需要一些国内的镜像才可以下载到相应的包。我们可以给我们的电脑增加如下的环境变量：    Linux或Mac123export PUB_HOSTED_URL&#x3D;https:&#x2F;&#x2F;pu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flutter开发中遇到的小问题">
+<meta property="og:url" content="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="前言flutter作为谷歌新推的跨平台的开发框架，有很大的发展前景。我主要归纳一些我在开发过程中遇到的难点,持续更新中… flutter卡在package get的解决方案主要的问题是国内有墙，需要一些国内的镜像才可以下载到相应的包。我们可以给我们的电脑增加如下的环境变量：    Linux或Mac123export PUB_HOSTED_URL&#x3D;https:&#x2F;&#x2F;pu">
+<meta property="og:image" content="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/conflict.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/depend.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/any.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/rightVer.png">
+<meta property="article:published_time" content="2020-04-08T07:56:51.000Z">
+<meta property="article:modified_time" content="2020-04-08T08:47:19.109Z">
 <meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="Flutter">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/conflict.png">
 
 
 
@@ -114,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/categories/Node/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/04/08/Flutter开发中遇到的小问题/"/>
 
 
 
 
 
-  <title>分类: Node | yinjiangQAQ Blog</title>
+  <title>Flutter开发中遇到的小问题 | yinjiangQAQ Blog</title>
   
 
 
@@ -139,7 +149,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -267,100 +277,223 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h2>Node<small>分类</small>
-        </h2>
-      </div>
+  
 
-      
-      
-      
-      
-            
-      
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-        <div class="collection-title">
-          <h2 class="archive-year motion-element" id="archive-year-2020">2020</h2>
+        
+          <h2 class="post-title" itemprop="name headline">Flutter开发中遇到的小问题</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-08T15:56:51+08:00">
+                2020-04-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Flutter/" itemprop="url" rel="index">
+                    <span itemprop="name">Flutter</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  435 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
         </div>
-     
-      
-        
+      </header>
+    
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h3 class="post-title">
-        
-            <a class="post-title-link" href="/2020/04/06/Node%E7%9A%84%E4%B8%B2%E8%A1%8C%E5%8C%96%E5%92%8C%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/" itemprop="url">
-              
-                <span itemprop="name">Node的串行化和并行化流程控制</span>
-              
-            </a>
-        
-      </h3>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-04-06T21:58:04+08:00"
-              content="2020-04-06" >
-          04-06
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
       
+
       
-      
-            
-      
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h3 class="post-title">
-        
-            <a class="post-title-link" href="/2020/04/06/Node-Gulp%E5%9F%BA%E4%BA%8E%E6%B5%81%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" itemprop="url">
-              
-                <span itemprop="name">Node--Gulp基于流的自动化构建工具</span>
-              
-            </a>
-        
-      </h3>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-04-06T14:46:19+08:00"
-              content="2020-04-06" >
-          04-06
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>flutter作为谷歌新推的跨平台的开发框架，有很大的发展前景。我主要归纳一些我在开发过程中遇到的难点,持续更新中…</p>
+<h2 id="flutter卡在package-get的解决方案"><a href="#flutter卡在package-get的解决方案" class="headerlink" title="flutter卡在package get的解决方案"></a>flutter卡在package get的解决方案</h2><p>主要的问题是国内有墙，需要一些国内的镜像才可以下载到相应的包。我们可以给我们的电脑增加如下的环境变量：  </p>
+<ul>
+<li>Linux或Mac<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export PUB_HOSTED_URL&#x3D;https:&#x2F;&#x2F;pub.flutter-io.cn</span><br><span class="line"></span><br><span class="line">export FLUTTER_STORAGE_BASE_URL&#x3D;https:&#x2F;&#x2F;storage.flutter-io.cn</span><br></pre></td></tr></table></figure></li>
+<li>Windows<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PUB_HOSTED_URL &#x3D;&#x3D;&#x3D;&#x3D;&#x3D; https:&#x2F;&#x2F;pub.flutter-io.cn</span><br><span class="line"></span><br><span class="line">FLUTTER_STORAGE_BASE_URL &#x3D;&#x3D;&#x3D;&#x3D;&#x3D; https:&#x2F;&#x2F;storage.flutter-io.cn</span><br></pre></td></tr></table></figure>
+然后在终端运行<code>flutter doctor</code>命令，后续的<code>package get</code> 应该就没问题了</li>
+</ul>
+<h2 id="Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案"><a href="#Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案" class="headerlink" title="Flutter报错Waiting for another flutter command to release the startup lock解决方案"></a>Flutter报错Waiting for another flutter command to release the startup lock解决方案</h2><p>解决方案： 打开<code>flutter</code><strong>安装目录</strong> <code>/bin/cache</code>，找到<code>lockfile</code>文件，把这个文件删除，问题就解决了</p>
+<h2 id="flutter中package包版本冲突的问题"><a href="#flutter中package包版本冲突的问题" class="headerlink" title="flutter中package包版本冲突的问题"></a>flutter中package包版本冲突的问题</h2><p>当你的项目需要安装的依赖包越多，遇到包冲突可能性就越大，尤其是当依赖的包有重大更新时<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/conflict.png" alt="conflict.png"></p>
+<p>上面可以看到是<code>xml</code>跟<code>intl_translation</code>两个包有冲突，因为他们依赖两个不同的<code>petitparser</code>包。打开<code>pubspec.yaml</code>看到:<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/depend.png" alt="depend.png"></p>
+<p>解决办法：<br>通过将两者依赖包版本号改为：any<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/any.png" alt="any.png"><br>击<code>flutter packages get</code>重新获取包，这样就会自动去匹配适合两者的包，然后我们会看到<code>Got dependencies</code>的结果，但是，问题还没有解决，我们需要在根目录下找到<code>pubspec.lock.yarm</code>文件，然后看到冲突的那两个包对应的版本号，这是通过匹配得到的适配的版本号，然后把在<code>pubspec.yaml</code>中的<code>any</code>改成对应的版本，就可以了。<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/rightVer.png" alt="rightVer.png"></p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Flutter/" rel="tag"><i class="fa fa-tag"></i> Flutter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/07/%E5%BC%82%E6%AD%A5%E5%8F%8A%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" rel="next" title="异步及异步编程的解决方案">
+                <i class="fa fa-chevron-left"></i> 异步及异步编程的解决方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -368,6 +501,16 @@
 
 
           
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
         </div>
         
           
@@ -387,8 +530,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -488,6 +640,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flutter卡在package-get的解决方案"><span class="nav-number">2.</span> <span class="nav-text">flutter卡在package get的解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案"><span class="nav-number">3.</span> <span class="nav-text">Flutter报错Waiting for another flutter command to release the startup lock解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flutter中package包版本冲突的问题"><span class="nav-number">4.</span> <span class="nav-text">flutter中package包版本冲突的问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -637,7 +805,9 @@
 
 
   
-  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
 
 
   
@@ -679,6 +849,28 @@
 
 
 
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
 
 
   
