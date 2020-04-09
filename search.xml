@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Node端做代理解决跨域问题获取接口数据</title>
+    <url>/2020/04/09/Node%E7%AB%AF%E5%81%9A%E4%BB%A3%E7%90%86%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E8%8E%B7%E5%8F%96%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>当我做一个小demo，利用<code>jsonp</code>调用QQ音乐的接口的时候，发现http请求语法，路径等都没错，但是控制台报了如下错误：<br><img src="/2020/04/09/Node%E7%AB%AF%E5%81%9A%E4%BB%A3%E7%90%86%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E8%8E%B7%E5%8F%96%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE/cross.png" alt="cross.png"><br>原来是跨域的问题。我们知道浏览器出于安全考虑，是支持同源策略的。<strong>当协议，域名，端口不同时，就 称为跨域</strong>。跨域的时候,ajax请求就会失败。但是jsonp不就是为了解决跨域的嘛，但是我们要知道，<code>jsonp</code>也是需要服务端允许的情况下，才可以使用<code>jsonp</code>来跨域的，上面这种报错的问题是，服务端不支持<code>jsonp</code>来获取此接口</p>
+<p>而跨域资源共享(<code>Cross-Origin-Resource-Sharing</code>)机制，是浏览器为了更安全的处理跨域请求，使其不受同源策略的限制。简单地来说就是在写入<code>response</code>头里的<code>Access-Control-Allow-Origin</code>。对应的源就可以实现跨域资源共享。由此我们知道，这种方法需要<strong>服务端和客户端</strong>同时实现的。</p>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>我们前面知道QQ音乐有些接口因为跨域的限制，不能直接获取到数据。这是因为这个接口指定了特定的源，也就是特定的<code>host</code>和<code>referer</code>，所以我们可以用Node端做一层代理，通过<code>Node server</code>来发送请求，把请求的<code>host</code>和<code>referer</code>改为QQ音乐接口允许的<code>host</code>和<code>referer</code>,来“欺骗”QQ音乐,Node端拿到数据之后，再返回给前端，显示在页面上.</p>
+<h3 id="怎么配置Node代理"><a href="#怎么配置Node代理" class="headerlink" title="怎么配置Node代理"></a>怎么配置Node代理</h3><p>首先用 vue-cli脚手架新建一个vue项目。我用的是vue3.0的版本，可能跟2.0的版本有些不同。</p>
+<p>在3.0的版本中，是没有<code>webpack.config.js</code>这个文件的，我们需要新建一个<code>vue.config.js</code>文件，来做一些vue项目的配置。</p>
+<p>在配置之前我们需要安装一些package，首先要引入<code>express</code>这个包<strong>(注意，vue3.0不会自带<code>express</code>，要自己npm )</strong></p>
+<p>除了express还要再装一个<code>axios</code>，这个是基于<code>promise</code>用于浏览器和node.js客户端的一个发送http请求的package</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm i express --save-dev</span><br><span class="line">npm i axios --save-dev</span><br></pre></td></tr></table></figure>
+<p>然后配置<code>vue.config.js</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const express &#x3D; require(&#39;express&#39;);</span><br><span class="line">const axios &#x3D; require(&#39;axios&#39;);</span><br><span class="line">var app &#x3D; express();</span><br><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">    devServer: &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;自动打开浏览器</span><br><span class="line">        open: true,</span><br><span class="line">        port: 8888,</span><br><span class="line">        before(app) &#123;</span><br><span class="line">            app.get(&#39;&#x2F;api&#x2F;getDiscList&#39;, function(req, res) &#123;</span><br><span class="line">                const url &#x3D; &#39;https:&#x2F;&#x2F;c.y.qq.com&#x2F;splcloud&#x2F;fcgi-bin&#x2F;fcg_get_diss_by_tag.fcg&#39;; &#x2F;&#x2F;node端要发送HTTP请求的url</span><br><span class="line">                axios.get(url, &#123;</span><br><span class="line">                    headers: &#123;</span><br><span class="line">                        referer: &#39;https:&#x2F;&#x2F;c.y.qq.com&#39;, &#x2F;&#x2F;node端伪造referer和host</span><br><span class="line">                        host: &#39;c.y.qq.com&#39;</span><br><span class="line">                    &#125;,</span><br><span class="line">                    params: req.query &#x2F;&#x2F;请求的参数</span><br><span class="line">                &#125;).then((response) &#x3D;&gt; &#123;</span><br><span class="line">                    res.json(response.data) &#x2F;&#x2F;node端http请求成功后拿到的数据吐给前端调用&#x2F;api&#x2F;getDiscList接口后返回的res</span><br><span class="line">                &#125;).catch((e) &#x3D;&gt; &#123;</span><br><span class="line">                    console.log(e)</span><br><span class="line">                &#125;)</span><br><span class="line"></span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>devserver</code>是vue项目中配置的本地服务器，<code>express</code>是node的web开发框架，<code>app</code>是<code>express()</code>返回的对象。<br>这里面方法<code>app.get(url,callback)</code>是一旦前端调用了这个url，node端就会执行callback，我们在<code>callback</code>中写入node端向我们真正要请求的接口的逻辑</p>
+<h3 id="前端向node端发送请求"><a href="#前端向node端发送请求" class="headerlink" title="前端向node端发送请求"></a>前端向node端发送请求</h3><p>我们在<code>src</code>目录下，新建一个<code>api</code>文件夹，然后在这个文件夹中新建一个<code>recommend.js</code>和一个<code>config.js</code>文件  </p>
+<p><code>recommend.js</code>文件里书写前端向node端发送请求的逻辑</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import axios from &#39;axios&#39;;</span><br><span class="line">import &#123; commonParams, options &#125; from &#39;.&#x2F;config&#39;;</span><br><span class="line"></span><br><span class="line">export function getRecommend() &#123;</span><br><span class="line">    const url &#x3D; &#39;https: &#x2F;&#x2F;c.y.qq.com&#x2F;splcloud&#x2F;fcgi-bin&#x2F;fcg_get_diss_by_tag.fcg&#39;;</span><br><span class="line">    const data &#x3D; Object.assign(&#123;&#125;, commonParams, &#123;</span><br><span class="line">        platform: &#39;h5&#39;,</span><br><span class="line">        uin: 0,</span><br><span class="line">        needNewCode: 1</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">export function getDiscList() &#123;</span><br><span class="line">    const url &#x3D; &#39;&#x2F;api&#x2F;getDiscList&#39;;</span><br><span class="line">    const data &#x3D; Object.assign(&#123;&#125;, commonParams, &#123;</span><br><span class="line">        platform: &#39;yqq&#39;,</span><br><span class="line">        hostUin: 0,</span><br><span class="line">        sin: 0,</span><br><span class="line">        ein: 29,</span><br><span class="line">        sortId: 5,</span><br><span class="line">        needNewCode: 0,</span><br><span class="line">        categoryId: 10000000,</span><br><span class="line">        rnd: Math.random(),</span><br><span class="line">        format: &#39;json&#39;</span><br><span class="line">    &#125;)</span><br><span class="line">    return axios.get(url, &#123;</span><br><span class="line">        params: data</span><br><span class="line">    &#125;).then((res) &#x3D;&gt; &#123;</span><br><span class="line">        &#x2F;&#x2F;这里的res,是之前前端调用&#x2F;api&#x2F;getDiscList接口返回的res</span><br><span class="line">        return Promise.resolve(res.data)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>config.js</code>文件里主要写一些配置相关的东西</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export const commonParams &#x3D; &#123;</span><br><span class="line">    g_tk: 5381,</span><br><span class="line">    inCharset: &#39;utf-8&#39;,</span><br><span class="line">    outCharset: &#39;utf-8&#39;,</span><br><span class="line">    notice: 0,</span><br><span class="line">    format: &#39;jsonp&#39;</span><br><span class="line">&#125;&#x2F;&#x2F;暴露出一个通用的参数对象</span><br><span class="line">export const options &#x3D; &#123;</span><br><span class="line">    params: &#39;jsonpCallback&#39;</span><br><span class="line">&#125;</span><br><span class="line">export const ERR_OK &#x3D; 0</span><br></pre></td></tr></table></figure>
+
+<h3 id="组件中的配置"><a href="#组件中的配置" class="headerlink" title="组件中的配置"></a>组件中的配置</h3><p>我们前端调用node端接口的方法已经写好了，现在我们只需要在我们想要实现这个功能的组件中引入这个方法便可。</p>
+<p>因为我是新建的一个vue项目，我就直接在<code>about.vue</code>中引入这个方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class&#x3D;&quot;about&quot;&gt;</span><br><span class="line">    &lt;h1&gt;This is an about page&lt;&#x2F;h1&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">import &#123;getDiscList&#125; from &#39;..&#x2F;api&#x2F;recommend&#39;</span><br><span class="line">export default &#123;</span><br><span class="line">  name: &#39;About&#39;,</span><br><span class="line">  created()&#123;</span><br><span class="line">this._getDiscList()</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    _getDiscList()&#123;</span><br><span class="line">      getDiscList().then((res)&#x3D;&gt;&#123;</span><br><span class="line">        console.log(res.data.list)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><p>在终端输入<code>npm  run serve</code>,vue2.0的朋友是<code>npm run dev</code><br>项目运行成功之后，我们打开谷歌的开发者工具，在控制台可以看到:<br><img src="/2020/04/09/Node%E7%AB%AF%E5%81%9A%E4%BB%A3%E7%90%86%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E8%8E%B7%E5%8F%96%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE/result.png" alt="result.png"><br>我们的demo就拿到了接口的数据了。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>最后归纳一下，有些接口，如果服务端不支持<code>Jsonp</code>的话，我们只能采用node代理服务器的方式,因为<code>nodeServer</code>可以加入header，配置<code>host</code>和<code>referer</code>,来达到”欺骗”的效果</p>
+<p>最后，千万不要用这种方法调用接口太频繁，会被封号的。</p>
+]]></content>
+      <categories>
+        <category>Node</category>
+      </categories>
+      <tags>
+        <tag>Node</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Flutter开发中遇到的小问题</title>
     <url>/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>flutter作为谷歌新推的跨平台的开发框架，有很大的发展前景。我主要归纳一些我在开发过程中遇到的难点,持续更新中…</p>
@@ -8,8 +42,10 @@
 <ul>
 <li>Linux或Mac<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PUB_HOSTED_URL&#x3D;https:&#x2F;&#x2F;pub.flutter-io.cn</span><br><span class="line"></span><br><span class="line">export FLUTTER_STORAGE_BASE_URL&#x3D;https:&#x2F;&#x2F;storage.flutter-io.cn</span><br></pre></td></tr></table></figure></li>
 <li>Windows<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUB_HOSTED_URL &#x3D;&#x3D;&#x3D;&#x3D;&#x3D; https:&#x2F;&#x2F;pub.flutter-io.cn</span><br><span class="line"></span><br><span class="line">FLUTTER_STORAGE_BASE_URL &#x3D;&#x3D;&#x3D;&#x3D;&#x3D; https:&#x2F;&#x2F;storage.flutter-io.cn</span><br></pre></td></tr></table></figure>
-然后在终端运行<code>flutter doctor</code>命令，后续的<code>package get</code> 应该就没问题了</li>
+
+</li>
 </ul>
+<p>然后在终端运行<code>flutter doctor</code>命令，后续的<code>package get</code> 应该就没问题了</p>
 <h2 id="Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案"><a href="#Flutter报错Waiting-for-another-flutter-command-to-release-the-startup-lock解决方案" class="headerlink" title="Flutter报错Waiting for another flutter command to release the startup lock解决方案"></a>Flutter报错Waiting for another flutter command to release the startup lock解决方案</h2><p>解决方案： 打开<code>flutter</code><strong>安装目录</strong> <code>/bin/cache</code>，找到<code>lockfile</code>文件，把这个文件删除，问题就解决了</p>
 <h2 id="flutter中package包版本冲突的问题"><a href="#flutter中package包版本冲突的问题" class="headerlink" title="flutter中package包版本冲突的问题"></a>flutter中package包版本冲突的问题</h2><p>当你的项目需要安装的依赖包越多，遇到包冲突可能性就越大，尤其是当依赖的包有重大更新时<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/conflict.png" alt="conflict.png"></p>
 <p>上面可以看到是<code>xml</code>跟<code>intl_translation</code>两个包有冲突，因为他们依赖两个不同的<code>petitparser</code>包。打开<code>pubspec.yaml</code>看到:<br><img src="/2020/04/08/Flutter%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/depend.png" alt="depend.png"></p>
@@ -25,10 +61,7 @@
   <entry>
     <title>异步及异步编程的解决方案</title>
     <url>/2020/04/07/%E5%BC%82%E6%AD%A5%E5%8F%8A%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<hr>
-<p>title: 异步及异步编程的解决方案<br>date: 2020-04-07 10:48:32<br>tags: JavaScript<br>categories: JavaScript</p>
-<hr>
-<h2 id="什么是异步"><a href="#什么是异步" class="headerlink" title="什么是异步"></a>什么是异步</h2><p>简单的来说就是一件事不是连续紧接着做完的，可以分为几个阶段，<strong>先进行一个阶段，剩下的阶段延后执行</strong>。在延迟的这段时间，做的是别的任务。相应的，连续执行的任务是同步的</p>
+    <content><![CDATA[<h2 id="什么是异步"><a href="#什么是异步" class="headerlink" title="什么是异步"></a>什么是异步</h2><p>简单的来说就是一件事不是连续紧接着做完的，可以分为几个阶段，<strong>先进行一个阶段，剩下的阶段延后执行</strong>。在延迟的这段时间，做的是别的任务。相应的，连续执行的任务是同步的</p>
 <p>例如：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">setTimeout(function() &#123;</span><br><span class="line">    console.log(&quot;4&quot;)</span><br><span class="line">&#125;, 0);</span><br><span class="line">console.log(&quot;5&quot;);</span><br></pre></td></tr></table></figure>
 <p><code>setTimeout</code>就是一个异步任务，先做延迟，然后在延迟期间把执行权交给了<code>console.log</code>，所以是先输出5，再输出4.</p>
@@ -108,6 +141,12 @@
 <p>执行<code>async1</code>的时候遇到<code>await</code>先去执行<code>async2</code>，然后跳出了函数体，去执行后续的代码，然后再回到当前<code>async1</code>函数当中执行<code>await</code>后续语句。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://delaprada.com/2020/01/14/Generator%E5%87%BD%E6%95%B0-async%E5%87%BD%E6%95%B0/#more" target="_blank" rel="noopener">https://delaprada.com/2020/01/14/Generator%E5%87%BD%E6%95%B0-async%E5%87%BD%E6%95%B0/#more</a></p>
 ]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>JavaScript</tag>
+      </tags>
   </entry>
   <entry>
     <title>Node的串行化和并行化流程控制</title>
