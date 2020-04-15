@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="yinjiangQAQ Blog">
 <meta property="og:description" content="前言手打了一些可能在面试中会问到的JavaScript功能的一些实现案例 call的实现12345678910111213141516function test(a) &amp;#123;    console.log(this)    b &#x3D; 1;    return this.b + a&amp;#125;&#x2F;&#x2F;测试用的函数Function.prototype.mycall &amp;#x">
 <meta property="article:published_time" content="2020-04-09T16:53:32.000Z">
-<meta property="article:modified_time" content="2020-04-09T17:03:30.105Z">
+<meta property="article:modified_time" content="2020-04-14T14:37:15.627Z">
 <meta property="article:author" content="yinjiangQAQ">
 <meta property="article:tag" content="JavaScript">
 <meta name="twitter:card" content="summary">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  475 字
+                  546 字
                 </span>
               
 
@@ -416,7 +416,7 @@
 <h2 id="apply的实现"><a href="#apply的实现" class="headerlink" title="apply的实现"></a>apply的实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">function test(a) &#123;</span><br><span class="line">    console.log(this)</span><br><span class="line">    b &#x3D; 1;</span><br><span class="line"></span><br><span class="line">    return this.b + a</span><br><span class="line">&#125; &#x2F;&#x2F;测试用的函数</span><br><span class="line">Function.prototype.myapply &#x3D; function(obj) &#123;</span><br><span class="line">    obj.fn &#x3D; this; &#x2F;&#x2F;将this指向指向了obj，绑定到了obj上</span><br><span class="line">    console.log(obj.fn)</span><br><span class="line">    if (arguments[1]) &#123;</span><br><span class="line">        return obj.fn(...arguments[1]) &#x2F;&#x2F;单独调用的函数的参数，不支持参数数组的，</span><br><span class="line">            &#x2F;&#x2F;需要把参数数组拓展开，用到拓展运算符</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return obj.fn()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;&#123; b: 2, fn: [Function: test] &#125;</span><br><span class="line">&#x2F;&#x2F;myapply 5</span><br></pre></td></tr></table></figure>
 <h2 id="bind的实现"><a href="#bind的实现" class="headerlink" title="bind的实现"></a>bind的实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">function test(a) &#123;</span><br><span class="line">    console.log(this)</span><br><span class="line">    b &#x3D; 1;</span><br><span class="line"></span><br><span class="line">    return this.b + a</span><br><span class="line">&#125; &#x2F;&#x2F;测试用的函数</span><br><span class="line">Function.prototype.mybind &#x3D; function(obj) &#123;</span><br><span class="line">    var _this &#x3D; this;</span><br><span class="line">    return function(...args) &#123;</span><br><span class="line">        return _this.apply(obj, args)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const obj &#x3D; &#123;</span><br><span class="line">    b: 2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">console.log(&#39;mybind&#39;, test.mybind(obj)(3))</span><br><span class="line">&#x2F;&#x2F;&#123; b: 2 &#125;</span><br><span class="line">&#x2F;&#x2F;mybind 5</span><br></pre></td></tr></table></figure>
 <h2 id="instance的实现"><a href="#instance的实现" class="headerlink" title="instance的实现"></a>instance的实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function myinstance(left, right) &#123;</span><br><span class="line"></span><br><span class="line">    left &#x3D; left.__proto__</span><br><span class="line">    let prototype &#x3D; right.prototype;</span><br><span class="line">    while (left !&#x3D;&#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">        if (prototype &#x3D;&#x3D;&#x3D; left) return true;</span><br><span class="line">        left &#x3D; left.__proto__</span><br><span class="line">    &#125;</span><br><span class="line">    return false</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">var a &#x3D; [1, 2];</span><br><span class="line">console.log(myinstance(a, Array))</span><br><span class="line">&#x2F;&#x2F;true</span><br></pre></td></tr></table></figure>
-<h2 id="new的实现"><a href="#new的实现" class="headerlink" title="new的实现"></a>new的实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function mynew() &#123;</span><br><span class="line">    let obj &#x3D; &#123;&#125;; &#x2F;&#x2F;新建一个对象</span><br><span class="line">    let con &#x3D; [].shift.call([...arguments]); &#x2F;&#x2F;拿第一个参数，也就是构造函数</span><br><span class="line">    obj.__proto__ &#x3D; con.prototype;&#x2F;&#x2F;连接到原型</span><br><span class="line">    let result &#x3D; con.call([...arguments].slice(1))&#x2F;&#x2F;绑定到this,也就是执行构造函数</span><br><span class="line">    return typeof result &#x3D;&#x3D;&#x3D; &#39;object&#39; ? result : obj&#x2F;&#x2F;返回这个对象</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="new的实现"><a href="#new的实现" class="headerlink" title="new的实现"></a>new的实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;ES5</span><br><span class="line">function mynew() &#123;</span><br><span class="line">    let obj &#x3D; &#123;&#125;; &#x2F;&#x2F;新建一个对象</span><br><span class="line">    let con &#x3D; [].shift.call([...arguments]); &#x2F;&#x2F;拿第一个参数，也就是构造函数</span><br><span class="line">    obj.__proto__ &#x3D; con.prototype;</span><br><span class="line">    let result &#x3D; con.call([...arguments].slice(1))</span><br><span class="line">    return typeof result &#x3D;&#x3D;&#x3D; &#39;object&#39; ? result : obj</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;ES6</span><br><span class="line">function myNew(fn, ...args) &#123;</span><br><span class="line">    let obj &#x3D; Object.create(fn.prototype); &#x2F;&#x2F;创建一个对象，将要实例化对象的原型链指向它</span><br><span class="line">    fn.call(obj, ...args); &#x2F;&#x2F;将函数指向该对象</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function fun1() &#123;</span><br><span class="line">    this.name &#x3D; &quot;?&quot;</span><br><span class="line">&#125;</span><br><span class="line">console.log(myNew(fun1), new fun1()) &#x2F;&#x2F;fun1 &#123; name: &#39;?&#39; &#125; fun1 &#123; name: &#39;?&#39; &#125;</span><br><span class="line"></span><br><span class="line">console.log(JSON.stringify(myNew(fun1)) &#x3D;&#x3D;&#x3D; JSON.stringify(new fun1())) &#x2F;&#x2F;true</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -464,6 +464,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/10/%E8%A7%A3%E5%86%B3js0-1-0-2%E7%9A%84%E9%97%AE%E9%A2%98/" rel="prev" title="解决js0.1+0.2的问题">
+                解决js0.1+0.2的问题 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -549,7 +553,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -614,7 +618,7 @@
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
-                    <a href="https://io-oi.me/tech/hexo-next-optimization/#%E5%BF%85%E8%AF%BB-%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2" title="hexo深度优化" target="_blank">hexo深度优化</a>
+                    <a href="https://xz.aliyun.com/t/1121" title="Web日志安全分析浅谈" target="_blank">Web日志安全分析浅谈</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
@@ -660,7 +664,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-04-10</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-04-15</span>
   <span class="with-love">
     <i class="fa fa-star"></i>
   </span>
