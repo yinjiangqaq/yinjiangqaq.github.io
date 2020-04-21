@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="前言接二连三受挫，想做一篇总结篇吧。   cookie和session的区别cookie是客户端保持状态的方案，session是服务端保持状态的方案cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cookies">
+<meta name="description" content="前言接二连三受挫，想做一篇总结篇吧。   cookie和session的区别cookie是客户端保持状态的方案，session是服务端保持状态的方案cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP响应头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cooki">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于cookie和session的深究">
 <meta property="og:url" content="http://yoursite.com/2020/03/16/%E5%85%B3%E4%BA%8Ecookie%E5%92%8Csession%E7%9A%84%E6%B7%B1%E7%A9%B6/index.html">
 <meta property="og:site_name" content="yinjiangQAQ Blog">
-<meta property="og:description" content="前言接二连三受挫，想做一篇总结篇吧。   cookie和session的区别cookie是客户端保持状态的方案，session是服务端保持状态的方案cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cookies">
+<meta property="og:description" content="前言接二连三受挫，想做一篇总结篇吧。   cookie和session的区别cookie是客户端保持状态的方案，session是服务端保持状态的方案cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP响应头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cooki">
 <meta property="og:image" content="http://yoursite.com/2020/03/16/%E5%85%B3%E4%BA%8Ecookie%E5%92%8Csession%E7%9A%84%E6%B7%B1%E7%A9%B6/cookie.png">
 <meta property="article:published_time" content="2020-03-16T09:53:12.000Z">
-<meta property="article:modified_time" content="2020-03-17T09:38:25.347Z">
+<meta property="article:modified_time" content="2020-04-16T15:25:07.866Z">
 <meta property="article:author" content="yinjiangQAQ">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary">
@@ -392,7 +392,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6 分钟
+                  7 分钟
                 </span>
               
             </div>
@@ -414,7 +414,7 @@
 
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接二连三受挫，想做一篇总结篇吧。  </p>
-<h2 id="cookie和session的区别"><a href="#cookie和session的区别" class="headerlink" title="cookie和session的区别"></a>cookie和session的区别</h2><h3 id="cookie是客户端保持状态的方案，session是服务端保持状态的方案"><a href="#cookie是客户端保持状态的方案，session是服务端保持状态的方案" class="headerlink" title="cookie是客户端保持状态的方案，session是服务端保持状态的方案"></a>cookie是客户端保持状态的方案，session是服务端保持状态的方案</h3><p>cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cookies 。<br>也就是说，cookie是服务端生成的，通过HTTP响应头向客户端发送，客户端浏览器解析拿到这个cookie，会保存为一个本地文件，并在后面与这一台服务器发送的任何请求，都会携带这个cookie。</p>
+<h2 id="cookie和session的区别"><a href="#cookie和session的区别" class="headerlink" title="cookie和session的区别"></a>cookie和session的区别</h2><h3 id="cookie是客户端保持状态的方案，session是服务端保持状态的方案"><a href="#cookie是客户端保持状态的方案，session是服务端保持状态的方案" class="headerlink" title="cookie是客户端保持状态的方案，session是服务端保持状态的方案"></a>cookie是客户端保持状态的方案，session是服务端保持状态的方案</h3><p>cookie是服务器在本地机器上存储的小段文本并随着每一个请求发送至同一个服务器。网络服务器用HTTP响应头向客户端发送cookies，在客户终端，浏览器解析这些cookies并将它们保存为一个本地文件，它会自动将同一服务器的任何请求缚上这些cookies 。很多浏览器限制一个站点最多保存20个cookie   </p>
 <p>那为什么要携带这个cookie呢，因为cookie的作用就是为了解决HTTP协议无状态的缺陷所作的努力。cookie的内容主要包括：名字，值，过期时间，路径和域。<strong>(可以理解成键值对，外加一些其他的属性)</strong>一般用户的敏感信息就会存在value字段。每次请求携带cookie相当于客户端在告诉服务器，现在是谁谁谁和你通信.所以说，<strong>cookie是客户端保持状态的方案</strong><br><img src="/2020/03/16/%E5%85%B3%E4%BA%8Ecookie%E5%92%8Csession%E7%9A%84%E6%B7%B1%E7%A9%B6/cookie.png" alt="cookie.png"><br>图一、   cookie的一些属性<br>cookie又分为两种：</p>
 <ul>
 <li><p>会话cookie：不设置过期时间，只要关闭浏览器，就会消失。生命周期是浏览器会话期间，一般保存在内存上</p>
@@ -422,13 +422,13 @@
 <li><p>持久性cookie：设置过期时间，<strong>会保存在用户硬盘上</strong>，同一浏览器可以访问，直到到了过期时间</p>
 </li>
 </ul>
-<p>既然cookie是服务端生成的，那怎么生成呢？<br>服务器通过在HTTP的响应头(第一次访问网站服务器的reponse头)中加上一行特殊的指示以提示浏览器按照指示生成相应的cookie<br>服务端那边写代码给HTTP响应头加入<code>set-Cookie</code>字段（cookie其实跟键值对差不多)</p>
+<p>既然cookie是服务端生成的，那怎么生成呢？ (错，cookie真正的话，是客户端浏览器生成的，服务端只是通过<code>set-cookie</code>，告知客户端要生成怎么样的cookie)<br>服务器通过在HTTP的响应头(第一次访问网站服务器的reponse头)中加上一行特殊的指示以提示浏览器按照指示生成相应的cookie<br>服务端那边写代码给HTTP响应头加入<code>set-Cookie</code>字段（cookie其实跟键值对差不多)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;HTTP响应头</span><br><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Content-type: text&#x2F;html</span><br><span class="line">Set-Cookie: foo&#x3D;10</span><br><span class="line">Set-Cookie: bar&#x3D;20; Expires&#x3D;Fri, 30 Sep 2011 11:48:00 GMT</span><br><span class="line">... rest  of the response</span><br></pre></td></tr></table></figure>
 <p>这里两个cookie foo = 10和bar = 20被存储在浏览器中。第二个将在9月30日到期。在随后的每个请求中，浏览器都会将cookie发送回服务器。</p>
 <p>后面浏览器给服务器发送的请求的时候，请求头(会携带上cookie)：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;spec.html HTTP&#x2F;1.1</span><br><span class="line">Host: www.example.com</span><br><span class="line">Cookie: foo&#x3D;10; bar&#x3D;20</span><br><span class="line">Accept: *&#x2F;*</span><br></pre></td></tr></table></figure>
-
-<p>那客户端浏览器可以生成cookie嘛？<br>答案是可以的。我们可以在chrome的控制台上，加入如下代码：</p>
+<p>所以说跟<code>cookie</code>相关的，有两个<code>http</code>头部字段，<code>set-cookie</code>和<code>cookie</code><br>set-cookie是http响应头，由服务端发送，它用于在客户端创建cookie<br><code>cookie</code>时<code>http</code>请求头部的字段，由客户端发送有<code>cookie</code>的<code>domain</code>和<code>path</code>与请求的URL匹配才会发送这个<code>cookie</code>。</p>
+<p>那客户端浏览器怎么手动生成cookie嘛？<br>答案是可以的。我们可以在chrome的控制台上，加入如下代码：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">document.cookie &#x3D; &#39;age &#x3D;18;max-age&#x3D;1000&#39;</span><br></pre></td></tr></table></figure>
 <p>然后你就可以看到cookie选项多了个<code>age=18</code>的cookie。然后这个cookie的长度，或者说size就是字符串’age18’的length，为5.其实还是挺符合定义，cookie是服务器存在本地机器上的<strong>一小段文本</strong><br>那前端既然可以用JavaScript创建cookie，那怎么清除掉呢。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">delCookies(name)&#123;</span><br><span class="line"></span><br><span class="line">var exp &#x3D; new Date();</span><br><span class="line"></span><br><span class="line">exp.setTime(exp.getTime() - 1);</span><br><span class="line"></span><br><span class="line">var cval &#x3D; this.getCookie(name);</span><br><span class="line"></span><br><span class="line">if(cval !&#x3D; null)&#123;</span><br><span class="line"></span><br><span class="line">document.cookie &#x3D; name + &quot;&#x3D;&quot; +cval + &quot;;expires&#x3D;&quot; + exp.toGMTString()</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -690,7 +690,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-04-15</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-04-22</span>
   <span class="with-love">
     <i class="fa fa-star"></i>
   </span>

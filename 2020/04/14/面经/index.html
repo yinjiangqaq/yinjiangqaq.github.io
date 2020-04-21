@@ -87,7 +87,7 @@
 <meta property="og:description" content="oppo JavaScript的基本数据类型有哪些，基本数据类型和引用数据类型的区别？JavaScript的基本数据类型有六个，Number,String,Boolean,Null,Undefined, Symbol。后面多了一个BigInt基本数据类型和引用数据类型（object）的区别：（存储的位置）   基本数据类型是存放在栈中的简单数据段，数据大小确定，内存空间大小可以分配，按值存放，按值">
 <meta property="og:image" content="http://yoursite.com/2020/04/14/%E9%9D%A2%E7%BB%8F/vue.png">
 <meta property="article:published_time" content="2020-04-14T12:33:45.000Z">
-<meta property="article:modified_time" content="2020-04-15T07:48:49.867Z">
+<meta property="article:modified_time" content="2020-04-21T16:43:36.972Z">
 <meta property="article:author" content="yinjiangQAQ">
 <meta property="article:tag" content="前端">
 <meta name="twitter:card" content="summary">
@@ -376,7 +376,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.8k 字
+                  4.4k 字
                 </span>
               
 
@@ -392,7 +392,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  11 分钟
+                  17 分钟
                 </span>
               
             </div>
@@ -473,6 +473,72 @@
 <p>通过proxy我们可以有效解决这个问题,原生支持监听数组变化，并且可以直接对整个对象进行拦截，所以 Vue 也将在下个大版本中使用 <code>Proxy</code>替换 <code>Object.defineProperty</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">let onWatch &#x3D; (obj, setBind, getLogger) &#x3D;&gt; &#123;</span><br><span class="line">    let handler &#x3D; &#123;</span><br><span class="line">        get(target, property, receiver) &#123;</span><br><span class="line">            getLogger(target, property)</span><br><span class="line">            return Reflect.get(target, property, receiver)</span><br><span class="line">        &#125;,</span><br><span class="line">        set(target, property, value, receiver) &#123;</span><br><span class="line">            setBind(value)</span><br><span class="line">            return Reflect.set(target, property, value)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return new Proxy(obj, handler)</span><br><span class="line">&#125;</span><br><span class="line">let obj &#x3D; &#123; a: 1 &#125;</span><br><span class="line">let value;</span><br><span class="line">let p &#x3D; onWatch(obj, v &#x3D;&gt; &#123;</span><br><span class="line">        value &#x3D; v;</span><br><span class="line">    &#125;,</span><br><span class="line">    (target, property) &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#96;Get &#39;$&#123;property&#125;&#39; &#x3D; $&#123;target[property]&#125;&#96;)</span><br><span class="line">    &#125;)</span><br><span class="line">p.a &#x3D; 2; &#x2F;&#x2F;bind value to 2</span><br><span class="line">p.a &#x2F;&#x2F;Get &#39;a&#39; &#x3D; 2</span><br></pre></td></tr></table></figure>
 
+<h2 id="网易互娱"><a href="#网易互娱" class="headerlink" title="网易互娱"></a>网易互娱</h2><h3 id="CSS哪些属性是可以从父级继承的？"><a href="#CSS哪些属性是可以从父级继承的？" class="headerlink" title=".CSS哪些属性是可以从父级继承的？"></a>.CSS哪些属性是可以从父级继承的？</h3><p>*<em>1.字体系列属性  *</em><br>font:组合字体  </p>
+<p>font-family：规定元素的字体系列  </p>
+<p>font-weight：设置字体的粗细  </p>
+<p>font-size：设置字体的尺寸  </p>
+<p>font-style：定义字体的风格  </p>
+<p>font-variant：设置小型大写字母的字体显示文本，这意味着所有的小写字母都会被转换成大写，但是所有使用小写大写字体的字母与其余文本相比，其字体尺寸更小 </p>
+<p> font-stretch：允许你使文字变宽或变窄。所有主流浏览器都不支持。</p>
+<p>font-size-adjust：为某个元素规定一个 aspect 值，字体的小写字母 “x”</p>
+<p>的高度与”font-size” 高度之间的比率被称为一个字体的 aspect 值。</p>
+<p>这样就可以保持首选字体的 x-height。</p>
+<p>有继承性的属性：</p>
+<p>2、<strong>文本系列属性</strong></p>
+<p>text-indent：文本缩进</p>
+<p>text-align：文本水平对齐</p>
+<p>text-shadow：设置文本阴影</p>
+<p>line-height：行高</p>
+<p>word-spacing：增加或减少单词间的空白（即字间隔）</p>
+<p>letter-spacing：增加或减少字符间的空白（字符间距）</p>
+<p>text-transform：控制文本大小写</p>
+<p>direction：规定文本的书写方向</p>
+<p>color：文本颜色</p>
+<p>有继承性的属性：</p>
+<p>3、<strong>元素可见性：visibility</strong></p>
+<p>4、<strong>表格布局属性：caption-side</strong></p>
+<p>border-collapse</p>
+<p>empty-cells</p>
+<p>5、列表属性：list-style-type</p>
+<p>list-style-image</p>
+<p>list-style-position、list-style</p>
+<p>6、设置嵌套引用的引号类型：quotes</p>
+<p>7、光标属性：cursor</p>
+<p>8、还有一些不常用的；speak，page等属性，暂不讲解；</p>
+<p>所有元素可以继承的属性：</p>
+<p>1、元素可见性：visibility</p>
+<p>2、光标属性：cursor</p>
+<p>内联元素可以继承的属性:</p>
+<p>1、字体系列属性</p>
+<p>2、除text-indent、text-align之外的文本系列属性</p>
+<p>块级元素可以继承的属性:</p>
+<p>text-indent、text-align</p>
+<p><strong>无继承的属性</strong></p>
+<p>1、display</p>
+<p>2、文本属性：vertical-align</p>
+<p>text-decoration</p>
+<p>3、盒子模型的属性:宽度、高度、内外边距、边框等</p>
+<p>4、背景属性：背景图片、颜色、位置等</p>
+<p>5、定位属性：浮动、清除浮动、定位position等</p>
+<p>6、生成内容属性:content、counter-reset、counter-increment</p>
+<p>7、轮廓样式属性:outline-style、outline-width、outline-color、outline</p>
+<p>8、页面样式属性:size、page-break-before、page-break-after</p>
+<p>继承中比较特殊的几点</p>
+<p>1、a 标签的字体颜色不能被继承</p>
+<p>1、<code>&lt;h1&gt;-&lt;h6&gt;</code>标签字体的大小也是不能被继承的</p>
+<h3 id="font-size有哪些单位？"><a href="#font-size有哪些单位？" class="headerlink" title="font-size有哪些单位？"></a>font-size有哪些单位？</h3><p>CSS 中 <code>font-size</code>常用的单位有<code>rem</code>、<code>em</code>、<code>px</code>、<code>pt</code>、<code>%</code>这几种</p>
+<p>em：相对长度单位，相对父级元素的font-size来定位</p>
+<p>rem:相对长度单位，相对根元素定义的<code>font-size</code>（16px)来计算最终的大小的</p>
+<p>%：就是百分比，按照当前的字体大小为100%来计算当前元素最终的字体大小，特点和<code>em</code>很像。</p>
+<p>pt(point)：绝对长度单位，是一个物理上的单位，不会随着不同设备的屏幕进行缩放。</p>
+<p>px:(像素)绝对长度单位，是一个视觉角度单位，会随着不同的屏幕进行缩放但是，<strong>其长度会受当前屏幕的 PPI 严重影响</strong>。举例来说通常你设置一个 margin 或者 pading 的值你会觉得在不同的屏幕下偏差很多，就是因为屏幕的 PPI (分辨率)不一样</p>
+<h3 id="vue中的vue-router的原理"><a href="#vue中的vue-router的原理" class="headerlink" title="vue中的vue-router的原理"></a>vue中的vue-router的原理</h3><p>在Vue中，vue-router占据重要的位置，是vue的核心插件。监听路径的变化，匹配路由规则显示对应的页面.(<code>router.js</code>文件中，配置了相关的路由信息，暴露了一个<code>router</code>对象，对象里面写一个<code>route</code>数组，数组的每个元素是一个包含<code>path</code>和<code>component</code>的对象)</p>
+<p>路由模式：hash模式，history模式,abstract模式</p>
+<h4 id="hash模式"><a href="#hash模式" class="headerlink" title="hash模式"></a>hash模式</h4><p>随着ajax的流行，异步数据请求交互运行在不刷新浏览器的情况下进行。而异步交互体验更高的版本就是SPA–单页应用。单页应用不仅在页面交互时不用刷新，而且在页面跳转时也是不用刷新，于是就有浏览前端路由。实现原理就是根据不同的url进行解析，来匹配不同的组件；但当url发生变化时就会造成页面的刷新。这就出现了hash，使用hash在改变url的情况下，保证页面的不刷新。<br><code>http://www.xxx.com/#/login</code><br>这种<code>#</code>，后面hash值发生变化，并不会导致浏览器向服务器发出请求，进而不会发生页面刷新。<strong>而且每当hash发生变化时，都会触发<code>hashchange</code>事件，通过这个事件可以知道hash值发生了什么变化</strong>，然后可以监听<code>hashchange</code>来实现<strong>更新页面部分内容大都操作</strong></p>
+<h4 id="history模式"><a href="#history模式" class="headerlink" title="history模式"></a>history模式</h4><p>因在HTML5标准发布后，多了两个API，<code>pushState，replaceState，</code>通过这两个API<strong>可以改变url地址且不会发送请求</strong>。同时还有<code>popstate</code>事件，<strong>通过这些API就能以另一种方式来实现前端路由，但原理与hash实现相同，但不会有</strong>#<strong>，</strong>因此当用户<strong>主动刷新页面</strong>之类操作时，还是会给服务器发送请求，为避免这种情况，<strong>所以这实现需要服务器支持，需把所有路由都重定向到根页面</strong>(这些路由模式都是基于单页面)</p>
+<h4 id="abstract模式"><a href="#abstract模式" class="headerlink" title="abstract模式"></a>abstract模式</h4><p><code>abstract</code>模式是使用一个不依赖于浏览器的浏览历史虚拟管理后端。<br>根据平台差异可以看出，在 Weex 环境中只支持使用 <code>abstract</code> 模式。 不过，<code>vue-router</code> 自身会对环境做校验，如果发现没有浏览器的 API，vue-router 会自动强制进入 <code>abstract</code> 模式，所以 在使用 <code>vue-router</code> 时只要不写 <code>mode</code> 配置即可，默认会在浏览器环境中使用<code>hash</code> 模式，在移动端原生环境中使用<code>abstract</code>模式。 （当然，你也可以明确指定在所有情况下都使用 <code>abstract</code> 模式）</p>
+<h4 id="vue-router的实现原理"><a href="#vue-router的实现原理" class="headerlink" title="vue-router的实现原理"></a>vue-router的实现原理</h4><p>原理核心：<strong>更新视图而不重新请求页面</strong>。 vue-router实现单页面跳转，提供了三种方式：hash模式、history模式 abstract模式，<strong>根据mode参决定使用哪种方式</strong>。 接下来详细剖析其原理(事实上现在的vue初始化项目的时候，都有通过交互式的对话栏，来配置初始的项目，询问你对router是采取hash还是history)</p>
+<p>对于三种模式的实现，请参考<br><a href="https://juejin.im/post/5b08c9ccf265da0dd527d98d" target="_blank" rel="noopener">https://juejin.im/post/5b08c9ccf265da0dd527d98d</a></p>
 
       
     </div>
@@ -696,7 +762,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#oppo"><span class="nav-number">1.</span> <span class="nav-text">oppo</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#oppo"><span class="nav-number">1.</span> <span class="nav-text">oppo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网易互娱"><span class="nav-number">2.</span> <span class="nav-text">网易互娱</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSS哪些属性是可以从父级继承的？"><span class="nav-number">2.1.</span> <span class="nav-text">.CSS哪些属性是可以从父级继承的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#font-size有哪些单位？"><span class="nav-number">2.2.</span> <span class="nav-text">font-size有哪些单位？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vue中的vue-router的原理"><span class="nav-number">2.3.</span> <span class="nav-text">vue中的vue-router的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hash模式"><span class="nav-number">2.3.1.</span> <span class="nav-text">hash模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#history模式"><span class="nav-number">2.3.2.</span> <span class="nav-text">history模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#abstract模式"><span class="nav-number">2.3.3.</span> <span class="nav-text">abstract模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vue-router的实现原理"><span class="nav-number">2.3.4.</span> <span class="nav-text">vue-router的实现原理</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -716,7 +782,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-04-15</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-04-22</span>
   <span class="with-love">
     <i class="fa fa-star"></i>
   </span>
