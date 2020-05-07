@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="JavaScript," />
 
 
 
@@ -79,11 +79,16 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="yinjiangQAQ Blog">
-<meta property="og:url" content="http://yoursite.com/tags/Node/index.html">
+<meta name="description" content="直接字面量创建1234567891011121314var objA &#x3D; &amp;#123;&amp;#125;;objA.name &#x3D; &#39;a&#39;;objA.sayName &#x3D; function() &amp;#123;    console.log(&#96;My name is $&amp;#123;this.name&amp;#125; !&#96;);&amp;#125;&#x2F;&amp;#x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析new和Object.create和{}的区别">
+<meta property="og:url" content="http://yoursite.com/2020/05/07/%E5%88%86%E6%9E%90new%E5%92%8CObject-create%E5%92%8C-%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
 <meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="直接字面量创建1234567891011121314var objA &#x3D; &amp;#123;&amp;#125;;objA.name &#x3D; &#39;a&#39;;objA.sayName &#x3D; function() &amp;#123;    console.log(&#96;My name is $&amp;#123;this.name&amp;#125; !&#96;);&amp;#125;&#x2F;&amp;#x2">
+<meta property="article:published_time" content="2020-05-07T09:02:42.000Z">
+<meta property="article:modified_time" content="2020-05-07T10:03:28.611Z">
 <meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="JavaScript">
 <meta name="twitter:card" content="summary">
 
 
@@ -114,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/Node/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/05/07/分析new和Object-create和-的区别/"/>
 
 
 
 
 
-  <title>标签: Node | yinjiangQAQ Blog</title>
+  <title>分析new和Object.create和{}的区别 | yinjiangQAQ Blog</title>
   
 
 
@@ -139,7 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -267,110 +272,227 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block tag">
-
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h2>Node<small>标签</small>
-        </h2>
-      </div>
-
-      
-        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/07/%E5%88%86%E6%9E%90new%E5%92%8CObject-create%E5%92%8C-%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
-      <h3 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2020/04/09/Node%E7%AB%AF%E5%81%9A%E4%BB%A3%E7%90%86%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E8%8E%B7%E5%8F%96%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE/" itemprop="url">
-              
-                <span itemprop="name">Node端做代理解决跨域问题获取接口数据</span>
-              
-            </a>
         
-      </h3>
+          <h2 class="post-title" itemprop="name headline">分析new和Object.create和{}的区别</h2>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-04-09T10:43:53+08:00"
-              content="2020-04-09" >
-          04-09
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-07T17:02:42+08:00">
+                2020-05-07
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  782 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h3 class="post-title">
-        
-            <a class="post-title-link" href="/2020/04/06/Node%E7%9A%84%E4%B8%B2%E8%A1%8C%E5%8C%96%E5%92%8C%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/" itemprop="url">
-              
-                <span itemprop="name">Node的串行化和并行化流程控制</span>
-              
-            </a>
-        
-      </h3>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-04-06T21:58:04+08:00"
-              content="2020-04-06" >
-          04-06
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+      
 
       
-        
+        <h2 id="直接字面量创建"><a href="#直接字面量创建" class="headerlink" title="直接字面量创建"></a>直接字面量创建</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var objA &#x3D; &#123;&#125;;</span><br><span class="line">objA.name &#x3D; &#39;a&#39;;</span><br><span class="line">objA.sayName &#x3D; function() &#123;</span><br><span class="line">    console.log(&#96;My name is $&#123;this.name&#125; !&#96;);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; var objA &#x3D; &#123;</span><br><span class="line">&#x2F;&#x2F;     name: &#39;a&#39;,</span><br><span class="line">&#x2F;&#x2F;     sayName: function() &#123;</span><br><span class="line">&#x2F;&#x2F;         console.log(&#96;My name is $&#123;this.name&#125; !&#96;);</span><br><span class="line">&#x2F;&#x2F;     &#125;</span><br><span class="line">&#x2F;&#x2F; &#125;</span><br><span class="line">objA.sayName();</span><br><span class="line">console.log(objA.__proto__ &#x3D;&#x3D;&#x3D; Object.prototype); &#x2F;&#x2F; true</span><br><span class="line">console.log(objA instanceof Object); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+<p>这样的直接字面量创建对象的方法等价于<code>new Object()</code></p>
+<h2 id="new关键字创建"><a href="#new关键字创建" class="headerlink" title="new关键字创建"></a>new关键字创建</h2><p>首先我们知道new关键字的原理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function mynew(fn)&#123;</span><br><span class="line">    let obj&#x3D;&#123;&#125;;&#x2F;&#x2F;新建一个对象</span><br><span class="line">    obj.__proto__&#x3D;fn.prototype;&#x2F;&#x2F;链接到原型</span><br><span class="line">    let result &#x3D;fn.call(arguments);&#x2F;&#x2F;执行构造函数</span><br><span class="line">    return typeof result &#x3D;&#x3D;&#x3D;&quot;object&quot; ? result : obj</span><br><span class="line">    &#x2F;&#x2F;返回这个对象</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> var objB &#x3D; new Object();</span><br><span class="line">&#x2F;&#x2F; var objB &#x3D; Object();</span><br><span class="line">objB.name &#x3D; &#39;b&#39;;</span><br><span class="line">objB.sayName &#x3D; function() &#123;</span><br><span class="line">    console.log(&#96;My name is $&#123;this.name&#125; !&#96;);</span><br><span class="line">&#125;</span><br><span class="line">objB.sayName();</span><br><span class="line">console.log(objB.__proto__ &#x3D;&#x3D;&#x3D; Object.prototype); &#x2F;&#x2F; true</span><br><span class="line">console.log(objB instanceof Object); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+<h2 id="Object-create"><a href="#Object-create" class="headerlink" title="Object.create()"></a>Object.create()</h2><p><code>Object.create(arg, pro)</code>创建的对象的原型取决于arg，<code>arg</code>为<code>null</code>，新对象是空对象，没有原型，不继承任何对象；<code>arg</code>为指定对象，新对象的原型指向指定对象，继承指定对象</p>
+<p><code>Object.create(proto[, propertiesObject])</code><br><code>proto</code>必填参数，是新对象的原型对象，如上面代码里新对象me的<code>__proto__</code>指向<code>person</code>。注意，如果这个参数是<code>null</code>，那新对象就彻彻底底是个<strong>空对象</strong>，没有继承<code>Object.prototype</code>上的任何属性和方法，如<code>hasOwnProperty()</code>、<code>toString()</code>等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var a &#x3D; Object.create(null);</span><br><span class="line">console.dir(a); &#x2F;&#x2F; &#123;&#125;</span><br><span class="line">console.log(a.__proto__); &#x2F;&#x2F; undefined</span><br><span class="line">console.log(a.__proto__ &#x3D;&#x3D;&#x3D; Object.prototype); &#x2F;&#x2F; false</span><br><span class="line">console.log(a instanceof Object); &#x2F;&#x2F; false 没有继承&#96;Object.prototype&#96;上的任何属性和方法，所以原型链上不会出现Object</span><br></pre></td></tr></table></figure>
+<p><code>propertiesObject</code>是可选参数，指定要添加到新对象上的可枚举的属性（即其自定义的属性和方法，可用<code>hasOwnProperty()</code>获取的，而不是原型对象上的）的描述符及相应的属性名称。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">var bb &#x3D; Object.create(null, &#123;</span><br><span class="line">    a: &#123;</span><br><span class="line">        value: 2,</span><br><span class="line">        writable: true,</span><br><span class="line">        configurable: true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">console.dir(bb); &#x2F;&#x2F; &#123;a: 2&#125;</span><br><span class="line">console.log(bb.__proto__); &#x2F;&#x2F; undefined</span><br><span class="line">console.log(bb.__proto__ &#x3D;&#x3D;&#x3D; Object.prototype); &#x2F;&#x2F; false</span><br><span class="line">console.log(bb instanceof Object); &#x2F;&#x2F; false 没有继承&#96;Object.prototype&#96;上的任何属性和方法，所以原型链上不会出现Object</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; ----------------------------------------------------------</span><br><span class="line"></span><br><span class="line">var cc &#x3D; Object.create(&#123;b: 1&#125;, &#123;</span><br><span class="line">    a: &#123;</span><br><span class="line">        value: 3,</span><br><span class="line">        writable: true,</span><br><span class="line">        configurable: true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">console.log(cc); &#x2F;&#x2F; &#123;a: 3&#125;</span><br><span class="line">console.log(cc.hasOwnProperty(&#39;a&#39;), cc.hasOwnProperty(&#39;b&#39;)); &#x2F;&#x2F; true false 说明第二个参数设置的是新对象自身可枚举的属性</span><br><span class="line">console.log(cc.__proto__); &#x2F;&#x2F; &#123;b: 1&#125; 新对象cc的__proto__指向&#123;b: 1&#125;</span><br><span class="line">console.log(cc.__proto__ &#x3D;&#x3D;&#x3D; Object.protorype); &#x2F;&#x2F; false</span><br><span class="line">console.log(cc instanceof Object); &#x2F;&#x2F; true cc是对象，原型链上肯定会出现Object</span><br></pre></td></tr></table></figure>
+<p>自己实现一个Object.create()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Object.mycreate &#x3D; function (proto, properties) &#123;</span><br><span class="line">    function F() &#123; &#125;;</span><br><span class="line">    let obj &#x3D; new F();</span><br><span class="line">    obj.__proto__ &#x3D; proto;</span><br><span class="line">    if (properties) &#123;</span><br><span class="line">        console.log(Object.keys(properties)[0])</span><br><span class="line">        Object.defineProperties(obj, properties);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br><span class="line">var hh &#x3D; Object.mycreate(&#123;a: 11&#125;, &#123;mm: &#123;value: 10&#125;&#125;);</span><br><span class="line">console.dir(hh.mm);&#x2F;&#x2F;10</span><br></pre></td></tr></table></figure>
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
 
-      <h3 class="post-title">
-        
-            <a class="post-title-link" href="/2020/04/06/Node-Gulp%E5%9F%BA%E4%BA%8E%E6%B5%81%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" itemprop="url">
-              
-                <span itemprop="name">Node--Gulp基于流的自动化构建工具</span>
-              
-            </a>
-        
-      </h3>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-04-06T14:46:19+08:00"
-              content="2020-04-06" >
-          04-06
-        </time>
-      </div>
-
-    </header>
-  </article>
 
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"><i class="fa fa-tag"></i> JavaScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/14/%E9%9D%A2%E7%BB%8F/" rel="next" title="面经">
+                <i class="fa fa-chevron-left"></i> 面经
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -378,6 +500,16 @@
 
 
           
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
         </div>
         
           
@@ -397,8 +529,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -498,6 +639,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#直接字面量创建"><span class="nav-number">1.</span> <span class="nav-text">直接字面量创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new关键字创建"><span class="nav-number">2.</span> <span class="nav-text">new关键字创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-create"><span class="nav-number">3.</span> <span class="nav-text">Object.create()</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -647,6 +804,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
@@ -687,6 +848,28 @@
 
 
 
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
 
 
   
