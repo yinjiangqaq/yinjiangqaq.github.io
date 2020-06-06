@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>前端开发中一些技巧和注意的点</title>
+    <url>/2020/06/07/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E4%B8%AD%E4%B8%80%E4%BA%9B%E6%8A%80%E5%B7%A7%E5%92%8C%E6%B3%A8%E6%84%8F%E7%9A%84%E7%82%B9/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这里主要是汇总一些根据自己平时开发或者从书上借鉴到的对前端开发比较有用的技巧和一些要注意的点。持续不时更新。</p>
+<h2 id="前端开发一些工具类的"><a href="#前端开发一些工具类的" class="headerlink" title="前端开发一些工具类的~"></a>前端开发一些工具类的~</h2><p>首先针对vue的话，<code>vue-devtools</code>一定要下，这极大地方便我们项目开发过程中去排查bug的出处。这个工具能监听各个组件的数据流，就很方便，特别是当项目里面的数据流极其复杂的时候，我们可以借助<code>vue-devtools</code>来顺着数据流去排查是哪个环节出了问题.下载的地方，谷歌chrome应用商城。可能要科学上网</p>
+<p>顺便讲一些可能也是方便前端开发者的工具</p>
+<p><code>FeHelper前端助手</code>(下载地址，同样chrome商城)<br>这个工具可以提供json查看器，图片的Base64编码。二维码生成器，二维码解码，时间戳转换工具，正则表达式工具，页面取色工具等</p>
+<p><code>http-server</code>(一个npm包，可以给前端开发，开一个本地服务器)</p>
+<p>安装：<code>npm install http-server -g</code> //全局安装<br>使用：只要power shell定位到你要用到的文件夹，然后power shell执行：http-server便可以把你的项目跑在本地服务器。通过访问它给的地址，便可以在浏览器，看到你的项目跑在本地的服务器上。（具体的配置可以上官网查看）<br>然后针对<code>HTTP server</code>，如果想把自己的项目在本地跑在所谓的域名之下，而不是local host的话，可以自己在本机的<code>hosts</code>文件，修改一下，把你当前访问的ip地址，映射到对应的域名，然后浏览器url输入该域名，便可以访问到你的项目<br><img src="/2020/06/07/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E4%B8%AD%E4%B8%80%E4%BA%9B%E6%8A%80%E5%B7%A7%E5%92%8C%E6%B3%A8%E6%84%8F%E7%9A%84%E7%82%B9/hosts.png" alt="hosts.png"></p>
+]]></content>
+      <categories>
+        <category>前端开发</category>
+      </categories>
+      <tags>
+        <tag>前端开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>初始化iview项目</title>
+    <url>/2020/05/21/%E5%88%9D%E5%A7%8B%E5%8C%96iview%E9%A1%B9%E7%9B%AE/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司提供的技术栈里面，包括前端样式框架iview，在逛官网的时候，发现官网给的项目里面有些坑，在面向百度开发之后，终于把项目跑起来了.</p>
+<h2 id="主要操作"><a href="#主要操作" class="headerlink" title="主要操作"></a>主要操作</h2><ul>
+<li>把远程仓库的项目克隆下来<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;view-design&#x2F;view-ui-project.git</span><br></pre></td></tr></table></figure></li>
+<li>下载依赖包<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm  install &#x2F;&#x2F;下载得到node_modules</span><br></pre></td></tr></table></figure></li>
+<li>初始化项目<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm run init</span><br></pre></td></tr></table></figure>
+但是有可能会出现报错<code>ERR_INVALID_CALLBACK</code>的情况，因为node版本的原因。</li>
+</ul>
+<p><code>node v10</code> 以上 <code>fs.write 的callback</code>是必须的，降低Node版本可解决。<br>不安装node也可以，可以将<code>webpack.dev.config.js</code> 和 <code>webpack.prod.config.js</code> 中的代码修改即可：给<code>fs.write</code>添加必要的callback函数，具体操作是在以上两个文件中找到下面这行代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fs.write(fd, buf, 0, buf.length, 0, function(err, written, buffer) &#123;&#125;);</span><br></pre></td></tr></table></figure>
+<p>修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fs.write(fd, buf, 0, &#39;utf-8&#39;, function(err, written, buffer) &#123;&#125;);</span><br></pre></td></tr></table></figure>
+<p>然后重新<code>npm run init</code> 即可.</p>
+<p>需要记住的是，<code>npm run init</code> 之后的项目结构多了<code>dist</code>目录和<code>index.html</code>两个</p>
+<ul>
+<li><p>把项目跑起来</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的点是，iview官网中提供了一种可以按需导入iview组件的方式，但是这样按需导入的方式跟全局导入的方式是不可以一起使用的，所以要么使用全局引用，要么使用按需导入。</p>
+</li>
+<li><p>全局引入</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import ViewUI from &#39;view-design&#39;;</span><br><span class="line">import &#39;view-design&#x2F;dist&#x2F;styles&#x2F;iview.css&#39;;</span><br><span class="line"></span><br><span class="line">Vue.use(ViewUI);</span><br></pre></td></tr></table></figure>
+<p>删除<code>.babelrc</code>配置文件中的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; &quot;plugins&quot;: [</span><br><span class="line">&#x2F;&#x2F;   [</span><br><span class="line">&#x2F;&#x2F;     &quot;import&quot;,</span><br><span class="line">&#x2F;&#x2F;     &#123;</span><br><span class="line">&#x2F;&#x2F;       &quot;libraryName&quot;: &quot;view-design&quot;,</span><br><span class="line">&#x2F;&#x2F;       &quot;libraryDirectory&quot;: &quot;src&#x2F;components&quot;</span><br><span class="line">&#x2F;&#x2F;     &#125;</span><br><span class="line">&#x2F;&#x2F;   ]</span><br><span class="line">&#x2F;&#x2F; ]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>按需导入<br>删除前面全局引入的方式，变成按需导入<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import &#123; Button, Table &#125; from &#39;iview&#39;;</span><br><span class="line">Vue.component(&#39;Button&#39;, Button);</span><br><span class="line">Vue.component(&#39;Table&#39;, Table);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>然后把 <code>.babelrc</code> 中删掉的重新复用<br>这个插件使用的前提是先需要 <code>npm install babel-plugin-import --save-dev</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> &quot;plugins&quot;: [</span><br><span class="line">&#x2F;&#x2F;......</span><br><span class="line">   [</span><br><span class="line">     &quot;import&quot;,</span><br><span class="line">     &#123;</span><br><span class="line">       &quot;libraryName&quot;: &quot;iview&quot;,</span><br><span class="line">       &quot;libraryDirectory&quot;: &quot;src&#x2F;components&quot;</span><br><span class="line">     &#125;</span><br><span class="line">   ]</span><br><span class="line"> ] &#x2F;&#x2F;babel插件</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>分析new和Object.create和{}的区别</title>
     <url>/2020/05/07/%E5%88%86%E6%9E%90new%E5%92%8CObject-create%E5%92%8C-%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<h2 id="直接字面量创建"><a href="#直接字面量创建" class="headerlink" title="直接字面量创建"></a>直接字面量创建</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var objA &#x3D; &#123;&#125;;</span><br><span class="line">objA.name &#x3D; &#39;a&#39;;</span><br><span class="line">objA.sayName &#x3D; function() &#123;</span><br><span class="line">    console.log(&#96;My name is $&#123;this.name&#125; !&#96;);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; var objA &#x3D; &#123;</span><br><span class="line">&#x2F;&#x2F;     name: &#39;a&#39;,</span><br><span class="line">&#x2F;&#x2F;     sayName: function() &#123;</span><br><span class="line">&#x2F;&#x2F;         console.log(&#96;My name is $&#123;this.name&#125; !&#96;);</span><br><span class="line">&#x2F;&#x2F;     &#125;</span><br><span class="line">&#x2F;&#x2F; &#125;</span><br><span class="line">objA.sayName();</span><br><span class="line">console.log(objA.__proto__ &#x3D;&#x3D;&#x3D; Object.prototype); &#x2F;&#x2F; true</span><br><span class="line">console.log(objA instanceof Object); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
@@ -14,7 +74,7 @@
 <p><code>propertiesObject</code>是可选参数，指定要添加到新对象上的可枚举的属性（即其自定义的属性和方法，可用<code>hasOwnProperty()</code>获取的，而不是原型对象上的）的描述符及相应的属性名称。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var bb &#x3D; Object.create(null, &#123;</span><br><span class="line">    a: &#123;</span><br><span class="line">        value: 2,</span><br><span class="line">        writable: true,</span><br><span class="line">        configurable: true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">console.dir(bb); &#x2F;&#x2F; &#123;a: 2&#125;</span><br><span class="line">console.log(bb.__proto__); &#x2F;&#x2F; undefined</span><br><span class="line">console.log(bb.__proto__ &#x3D;&#x3D;&#x3D; Object.prototype); &#x2F;&#x2F; false</span><br><span class="line">console.log(bb instanceof Object); &#x2F;&#x2F; false 没有继承&#96;Object.prototype&#96;上的任何属性和方法，所以原型链上不会出现Object</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; ----------------------------------------------------------</span><br><span class="line"></span><br><span class="line">var cc &#x3D; Object.create(&#123;b: 1&#125;, &#123;</span><br><span class="line">    a: &#123;</span><br><span class="line">        value: 3,</span><br><span class="line">        writable: true,</span><br><span class="line">        configurable: true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">console.log(cc); &#x2F;&#x2F; &#123;a: 3&#125;</span><br><span class="line">console.log(cc.hasOwnProperty(&#39;a&#39;), cc.hasOwnProperty(&#39;b&#39;)); &#x2F;&#x2F; true false 说明第二个参数设置的是新对象自身可枚举的属性</span><br><span class="line">console.log(cc.__proto__); &#x2F;&#x2F; &#123;b: 1&#125; 新对象cc的__proto__指向&#123;b: 1&#125;</span><br><span class="line">console.log(cc.__proto__ &#x3D;&#x3D;&#x3D; Object.protorype); &#x2F;&#x2F; false</span><br><span class="line">console.log(cc instanceof Object); &#x2F;&#x2F; true cc是对象，原型链上肯定会出现Object</span><br></pre></td></tr></table></figure>
 <p>自己实现一个Object.create()</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object.mycreate &#x3D; function (proto, properties) &#123;</span><br><span class="line">    function F() &#123; &#125;;</span><br><span class="line">    let obj &#x3D; new F();</span><br><span class="line">    obj.__proto__ &#x3D; proto;</span><br><span class="line">    if (properties) &#123;</span><br><span class="line">        console.log(Object.keys(properties)[0])</span><br><span class="line">        Object.defineProperties(obj, properties);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br><span class="line">var hh &#x3D; Object.mycreate(&#123;a: 11&#125;, &#123;mm: &#123;value: 10&#125;&#125;);</span><br><span class="line">console.dir(hh.mm);&#x2F;&#x2F;10</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object.mycreate &#x3D; function (proto, properties) &#123;</span><br><span class="line">    function F() &#123; &#125;;</span><br><span class="line">    let obj &#x3D; new F();</span><br><span class="line">    obj.__proto__ &#x3D; proto;</span><br><span class="line">    if (properties) &#123;</span><br><span class="line">        console.log(Object.keys(properties)[0])</span><br><span class="line">        Object.defineProperties(obj, properties);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br><span class="line">var hh &#x3D; Object.mycreate(&#123;a: 11&#125;, &#123;mm: &#123;value: 10&#125;&#125;);</span><br><span class="line">console.log(hh.mm);&#x2F;&#x2F;10</span><br></pre></td></tr></table></figure>
 
 
 
@@ -155,6 +215,7 @@
 <h4 id="abstract模式"><a href="#abstract模式" class="headerlink" title="abstract模式"></a>abstract模式</h4><p><code>abstract</code>模式是使用一个不依赖于浏览器的浏览历史虚拟管理后端。<br>根据平台差异可以看出，在 Weex 环境中只支持使用 <code>abstract</code> 模式。 不过，<code>vue-router</code> 自身会对环境做校验，如果发现没有浏览器的 API，vue-router 会自动强制进入 <code>abstract</code> 模式，所以 在使用 <code>vue-router</code> 时只要不写 <code>mode</code> 配置即可，默认会在浏览器环境中使用<code>hash</code> 模式，在移动端原生环境中使用<code>abstract</code>模式。 （当然，你也可以明确指定在所有情况下都使用 <code>abstract</code> 模式）</p>
 <h4 id="vue-router的实现原理"><a href="#vue-router的实现原理" class="headerlink" title="vue-router的实现原理"></a>vue-router的实现原理</h4><p>原理核心：<strong>更新视图而不重新请求页面</strong>。 vue-router实现单页面跳转，提供了三种方式：hash模式、history模式 abstract模式，<strong>根据mode参决定使用哪种方式</strong>。 接下来详细剖析其原理(事实上现在的vue初始化项目的时候，都有通过交互式的对话栏，来配置初始的项目，询问你对router是采取hash还是history)</p>
 <p>对于三种模式的实现，请参考<br><a href="https://juejin.im/post/5b08c9ccf265da0dd527d98d" target="_blank" rel="noopener">https://juejin.im/post/5b08c9ccf265da0dd527d98d</a></p>
+<h3 id="vue中使用定时器需要注意些什么"><a href="#vue中使用定时器需要注意些什么" class="headerlink" title="vue中使用定时器需要注意些什么"></a>vue中使用定时器需要注意些什么</h3><p><code>setTimeout</code>和 <code>setInterval</code>(循环)，需要注意的是在页面销毁的时候，需要在beforeDestroy销毁计时器<code>(clearTimeout clearInterval)</code></p>
 <h2 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h2><p><a href="https://juejin.im/post/59c907d46fb9a00a4746e2db" target="_blank" rel="noopener">个人觉得很详细的前端面经知识汇总</a></p>
 ]]></content>
       <categories>
