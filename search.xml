@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>从渲染原理出发探究Flutter内存泄漏</title>
+    <url>/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>众所周知，<strong>内存的高低</strong>是评判一款 app 的性能优劣的重要的指标之一。如何更简单的帮助开发者分析、暴露且解决内存泄漏问题，几乎是每一个平台或框架、开发者亟需的一个的”标配”的 feature。但是对于 flutter 社区，缺少一款用得顺手的内存泄漏工具。</p>
+<p>对于使用 flutter 而言，因使用 dart 语言，通过形成渲染树提交到 c++的 skia 进行渲染，从 dart 层到 c++层拥有很长的渲染链路，使用者必须对整个渲染链路有通盘深刻的理解，才能深刻此时此刻的内存使用情况。本文提出一种基于渲染树个数的方式寻找内存泄漏的解决方案。</p>
+<h2 id="Flutter-的内存包含哪些"><a href="#Flutter-的内存包含哪些" class="headerlink" title="Flutter 的内存包含哪些"></a>Flutter 的内存包含哪些</h2><h3 id="虚拟内存还是物理内存"><a href="#虚拟内存还是物理内存" class="headerlink" title="虚拟内存还是物理内存"></a>虚拟内存还是物理内存</h3><p>当我们谈论内存时，通常说的是物理内存（Physical memory），同一个应用程序运行在不同机器或者操作系统上时，会因不同操作系统和机器的硬件条件的不同，分配的到物理内存大小会有所不同，但大致而言，一款应用程序所使用到的虚拟内存（Virtual Memory）而言便会大致一样，本文讨论的都指的是虚拟内存。</p>
+<p>我们可以直观的理解，代码中操作的所有对象都是能用虚拟内存衡量，而不太关心对象是否存在于物理内存与否，只要能减少对象的应用，尽量少的持有对象，不管白猫黑猫，能减少对象的，都是“好猫”。</p>
+<h3 id="Flutter-的架构及内存组成"><a href="#Flutter-的架构及内存组成" class="headerlink" title="Flutter 的架构及内存组成"></a>Flutter 的架构及内存组成</h3><p>flutter 从使用的语言上，可以分成 3 大部分，</p>
+<ul>
+<li><p>Framework 层 由 Dart 编写，开发者接触到顶层，用于应用层开发</p>
+</li>
+<li><p>Engine 层，由 C/C++编写，主要进行图形渲染</p>
+</li>
+<li><p>Embedder 层，由植入层语言编写，如 iOS 使用 Objective-C/swift，Android 使用 java</p>
+</li>
+</ul>
+<p>当我们从进程角度谈论 flutter 应用的内存时，指的是这个三者所有的内存的总和。</p>
+<p>为简化，这里可以简单的以使用者能直接接触的代码为边界，将其分成 DartVM 和 native 内存，<br>DartVM 指 Dart 虚拟机占用内存，而 native 内存包含 Engine 和平台相关的代码运行的内存。<br><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/flutter.png" alt="flutter.png"><br>我们知道 Flutter 的使用者最直接接触的是使用 Dart 语言生成的对象，那对于 Engine 层的对象的创建与销毁，是怎么实现的呢？</p>
+<h2 id="Dart-绑定层如何工作"><a href="#Dart-绑定层如何工作" class="headerlink" title="Dart 绑定层如何工作"></a>Dart 绑定层如何工作</h2><p>出于性能或者跨平台或其他原因，脚本语言或者基于<strong>虚拟机的语言都会提供 c/c++或函数对象绑定到具体语言对象的接口，以便在语言中接着操控 c/c++对象或函数</strong>，这层 API 称为<strong>绑定层</strong>。例如: 最易嵌入应用程序中的 Lua binding ，Javascript V8 引擎的 binding 等等。</p>
+<p>Dart 虚拟机在初始化时，会将 C++声明的某个类或者函数和某个函数和 Dart 中的某个类或者绑定起来，依次注入 Dart 运行时的全局遍历中，当 Dart 代码执行某一个函数时，便是指向具体的 C++对象或者函数。</p>
+<p>下面是几个常见的绑定的几个 c++类和对应的 Dart 类</p>
+<blockquote>
+<p>flutter::EngineLayer –&gt; ui.EngineLayer</p>
+<p>flutter::FrameInfo –&gt; ui.FrameInfo</p>
+<p>flutter::CanvasImage –&gt; ui.Image</p>
+<p>flutter::SceneBuilder –&gt; ui.SceneBuilder</p>
+<p>flutter::Scene –&gt; ui.Scene</p>
+</blockquote>
+<p>以 <code>ui.SceneBuilder</code>一个例子了解下 Dart 是如何绑定 c++对象实例，并且控制这个 c++实例的析构工作。</p>
+<blockquote>
+<p>Dart 层渲染过程是配置的 layer 渲染树，并且提交到 c++层进行渲染的过程。ui.SceneBuilder 便是这颗渲染树的容器</p>
+</blockquote>
+<p><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/SceneBuilder.png" alt="SceneBuilder.png"></p>
+<ol>
+<li><p>Dart 代码调用构造函数 ui.SceneBuilder()时，调用 c++方法 SceneBuilder_constructor</p>
+</li>
+<li><p>调用 flutter::SceneBuilder 的构造方法并生成 c++实例 sceneBuilder</p>
+</li>
+<li><p>因 flutter::SceneBuilder 继承自内存计数对象 RefCountedDartWrappable，对象生成后会内存计数加 1</p>
+</li>
+<li><p>将生成 c++实例 sceneBuilder 使用 Dart 的 API 生成一个 WeakPersitentHandle，注入到 Dart 上下中。在这里之后，Dart 便可使用这个 builder 对象，便可操作这个 c++的 flutter::SceneBuilder 实例。</p>
+</li>
+<li><p>程序运行许久后，当 Dart 虚拟机判断 Dart 对象 builder 没有被任何其他对象引用时（例如简单的情况是被置空 builder=null，也称为无可达性），对象就会被垃圾回收器（Garbage Collection）回收释放，内存计数将会减一</p>
+</li>
+<li><p>当内存计数为 0 时，会触发 c++的析构函数，最终 c++实例指向的内存块被回收</p>
+</li>
+</ol>
+<p>可以看到，Dart 是通过将 C/C++实例封装成 WeakPersitentHandle 且注入到 Dart 上下文的方式，从而利用 Dart 虚拟机的 GC（Garbage Collection）来控制 C/C++实例的创建和释放工作</p>
+<p>更直白而言，只要 C/C++实例对应的 Dart 对象能正常被 GC 回收，C/C++所指向的内存空间便会正常释放。</p>
+<h2 id="WeakPersistentHandle-是什么"><a href="#WeakPersistentHandle-是什么" class="headerlink" title="WeakPersistentHandle 是什么"></a>WeakPersistentHandle 是什么</h2><p>因为 Dart 对象在 VM 中会因为 GC 整理碎片化中经常移动，所以使用对象时不会直接指向对象，而是使用句柄（handle）的方式间接指向对象，再者 c/c++对象或者实例是介乎于 Dart 虚拟机之外，生命周期不受作用域约束，且一直长时间存在于整个 Dart 虚拟机中，所以称为常驻（Persistent），所以 WeakPersistentHandle 专门指向生命周期与常在的句柄，在 Dart 中专门用来封装 C/C++实例。</p>
+<p>在 flutter 官方提供的 Observatory 工具中，可以查看所有的 WeakPersistentHandle 对象</p>
+<p><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/Observatory.png" alt="Observatory.png"></p>
+<p>其中 Peer 这栏也就是封装 c/c++对象的指针<br><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/pointer.png" alt="pointer.png"></p>
+<h2 id="Dart-对象的可达性"><a href="#Dart-对象的可达性" class="headerlink" title="Dart 对象的可达性"></a>Dart 对象的可达性</h2><p>Dart 对象释放会被垃圾回收器（Garbage Collection）进行释放，是通过判定对象是否还有可达性（availability）来达到的。可达性是指通过某些根节点出发，通过对象与对象间的引用链去访问对象，如可通过引用链去访问对象，则说明对象有可达性，否则无可达性。</p>
+<p>黄色有可达性，蓝色无可达性<br><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/availability.png" alt="availability.png"></p>
+<h2 id="难以察觉的内存泄漏"><a href="#难以察觉的内存泄漏" class="headerlink" title="难以察觉的内存泄漏"></a>难以察觉的内存泄漏</h2><p>看到这里我们会发现一个问题，其实我们很难从 Dart 侧感知 C/C++对象的消亡，因为 Dart 对象无统一的如同 C++类一样的析构函数，一旦对象因为循环引用等的原因被长期其他对象长期引用，GC 将无法将其释放，最终导致内存泄漏。</p>
+<p>将问题放大一点，我们知道 flutter 是一个渲染引擎，我们通过编写 Dart 语言构建出一颗 Widget 树，进而经过绘制等过程简化成 Element 树，RenderObject 树，Layer 树，并将这颗 Layer 树提交至 C++层，进而使用 Skia 进行渲染。</p>
+<p>如果某个 Wigdet 树或 Element 树的某个节点长期无法得到释放，将可能造成他的子节点也牵连着无法释放，将泄漏的内存空间迅速扩大。</p>
+<p>例如，存在两个 A，B 界面，A 界面通过 Navigator.push 的方式添加 B 界面，B 界面通过 Navigator.pop 回退到 A。如果 B 界面因为某些写法的缘故导致 B 的渲染树虽然被从主渲染树解开后依然无法被释放，这会导致整个原来 B 的子树都无法释放。</p>
+<h3 id="检测方法"><a href="#检测方法" class="headerlink" title="检测方法"></a>检测方法</h3><p>基于上面的这一个情况，我们其实可以通过对比当前帧使用到的渲染节点个数，对比当前内存中渲染节点的个数来判断前一个界面释放存在内存泄漏的情况。</p>
+<p>Dart 代码中都是通过往 ui.SceneBuilder 添加 EngineLayer 的方式去构建渲染树，那么我们只要检测 c++中内存中 EngineLayer 的个数，对比当前帧使用的 EngineLayer 个数，如果内存中的 EngineLayer 个数长时间大于使用的个数，那么我们可以判断存在有内存泄漏<br><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/compare.png" alt="compare.png"></p>
+<p>依然以上次 A 页面 pushB 界面，B 界面 pop 回退 A 界面为例子。正常无内存泄漏的情况下，正在使用的 layer 个数（蓝色），内存中的 layer 个数（橙色）两条曲线的虽然有波动，但是最终都会比较贴合。</p>
+<p>但是在 B 页面存在内存泄漏的时候，退到 A 界面后，B 树完全无法释放，内存中的 layer 个数（橙色）无法最终贴合蓝色曲线（正在使用的 layer 个数）</p>
+<p>也就是说，对于渲染而言，如果代码导致 Widget 树或 Element 树长时间无法被 GC 回收，很可能会导致严重的内存泄漏情况。</p>
+<h3 id="什么导致了内存泄漏"><a href="#什么导致了内存泄漏" class="headerlink" title="什么导致了内存泄漏"></a>什么导致了内存泄漏</h3><p>目前发现异步执行的代码的场景(Feature, async/await,methodChan）长期持有传入的 BuildContext，导致 element 被移除后，依然长期存在，最终导致以及关联的 widget， state 发生泄漏。</p>
+<p>再继续看 B 页面泄漏的例子<br><img src="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/example.png" alt="example.png"><br>正确与错误的写法的区别在于，错误的仅是在调用 Navigator.pop 之前，使用异步方法 Future 引用了 BuildContext，便会导致 B 界面内存泄漏。</p>
+<h2 id="怎么发现内存泄漏点"><a href="#怎么发现内存泄漏点" class="headerlink" title="怎么发现内存泄漏点"></a>怎么发现内存泄漏点</h2><p>目前 flutter 内存泄漏检测工具的设计思路是，对比界面进入前后的对象，寻找出未被释放的对象，进而查看未释放的引用关系（Retaining path 或 Inbound references），再结合源码进行分析，最后找到错误代码。</p>
+<p>使用 Flutter 自带的 Observatory 纵然可以一个一个查看每个泄漏对象的引用关系，但是对于一个稍微复杂一点的界面而言，最终生成的 layer 个数是非常庞杂的，想要在 Observatory 所有的泄漏对象中找到有问题的代码是一项非常庞杂的任务。</p>
+<p>为此我们将这些繁杂的定位工作都进行了可视化。</p>
+<p>我们这里将每一帧提交到 engine 的所有 EngineLayer 进行了一个记录，并且以折线图的形式记录下来，如果上文说的<strong>内存中的 layer 个数异常的大于使用中的 layer 个数</strong>，那么就可判断前一个页面存在有内存泄漏。</p>
+<p>进而，还可以抓取当前页面的 layer 树的结构，用以辅助定位具体由哪个 RenderObject 树生成的 Layer 树，进而继续分析由哪个 Element 节点生成的 RenderObject 节点,或者也可以打印出 WeakPersitentHandle 的引用链辅助分析,但如今的痛点依然存在，依然需要通过查看 Handle 的引用链，结合源码的分析才能最终比较快捷的定位问题。这也是接下来亟需解决的问题。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p>我们这种从渲染树的角度去探寻 flutter 内存泄漏的方法，可以推广到所以其他 Dart 不同类型的对象。</p>
+</li>
+<li><p>开发者在编写代码时，需要时刻注意异步调用，以及时刻注意操纵的 Element 会否被引用而导致无法释放</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+      <tags>
+        <tag>Flutter</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vue的双向绑定实现</title>
     <url>/2020/08/27/vue%E7%9A%84%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>面试问到 vue 数据的双向绑定，问深了，就有点答不上来了，所以想系统地自己搞一遍 vue 的数据双向绑定</p>
@@ -69,6 +154,32 @@
 
 <p>这时候我们可以来真正测试了，在页面上设置如下东西：</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model</span>=<span class="string">"name"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">v-on:click</span>=<span class="string">"clickMe"</span>&gt;</span>click me!<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"js/observer.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"js/watcher.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"js/compile.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"js/index.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">new</span> SelfVue(&#123;</span></span><br><span class="line"><span class="actionscript">    el: <span class="string">"#app"</span>,</span></span><br><span class="line">    data: &#123;</span><br><span class="line"><span class="actionscript">      title: <span class="string">"hello world"</span>,</span></span><br><span class="line"><span class="actionscript">      name: <span class="string">"canfoo"</span>,</span></span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line"><span class="actionscript">      clickMe: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">this</span>.title = <span class="string">"hello world"</span>;</span></span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line"><span class="actionscript">    mounted: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="built_in">window</span>.setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">this</span>.title = <span class="string">"你好"</span>;</span></span><br><span class="line">      &#125;, 1000);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="这种双向绑定的局限性"><a href="#这种双向绑定的局限性" class="headerlink" title="这种双向绑定的局限性"></a>这种双向绑定的局限性</h2><ul>
+<li>不能监听数组的变化、</li>
+<li>不能监听复杂对象的变化</li>
+</ul>
+<p>之前用 <code>Object.defineProperty</code>通过对象的 <code>getter/setter</code>简单的实现了对象属性变化的监听，并且去通过依赖关系去做相应的依赖处理。</p>
+<p>看懂之前的实现之后，我们不难发现，当对象中<strong>某个属性的值</strong>是数组的时候。正如 Vue 文档所说：</p>
+<blockquote>
+<p>由于 JavaScript 的限制，Vue 无法检测到以下数组变动：</p>
+<p>当你使用索引直接设置一项时，例如 vm.items[indexOfItem] = newValue</p>
+<p>当你修改数组长度时，例如 vm.items.length = newLength</p>
+<p>因为他不是给数组这个属性赋值一个新值，所以不会触发 setter</p>
+</blockquote>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><h3 id="hacking"><a href="#hacking" class="headerlink" title="hacking"></a>hacking</h3><p>Vue 中解决这个问题的方法，是将数组的常用方法进行重写，通过包装之后的数组方法就能够去在调用的时候被监听到。</p>
+<p>在这里，我想的一种方法与它类似，大概就是通过原型链去拦截对数组的操作，从而实现对操作数组这个行为的监听。</p>
+<p>实现如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 让 arrExtend 先继承 Array 本身的所有属性</span></span><br><span class="line"><span class="keyword">const</span> arrExtend = <span class="built_in">Object</span>.create(<span class="built_in">Array</span>.prototype);</span><br><span class="line"><span class="keyword">const</span> arrMethods = [</span><br><span class="line">  <span class="string">"push"</span>,</span><br><span class="line">  <span class="string">"pop"</span>,</span><br><span class="line">  <span class="string">"shift"</span>,</span><br><span class="line">  <span class="string">"unshift"</span>,</span><br><span class="line">  <span class="string">"splice"</span>,</span><br><span class="line">  <span class="string">"sort"</span>,</span><br><span class="line">  <span class="string">"reverse"</span>,</span><br><span class="line">];</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * arrExtend 作为一个拦截对象, 对其中的方法进行重写</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">arrMethods.forEach(<span class="function">(<span class="params">method</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> oldMethod = <span class="built_in">Array</span>.prototype[method];</span><br><span class="line">  <span class="keyword">const</span> newMethod = <span class="function"><span class="keyword">function</span> (<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    oldMethod.apply(<span class="keyword">this</span>, args);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;method&#125;</span>方法被执行了`</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  arrExtend[method] = newMethod;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  arrExtend,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>需要在 <code>defineReactive</code> 函数中添加的代码为：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(value)) &#123;</span><br><span class="line">  value.__proto__ = arrExtend;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试 <code>data.list.push(1)</code><br>会发现触发了之前我们改写的逻辑，这时候，我们只需要把更新视图相关的逻辑，放在改写的方法里面，就可以实现对数组的监听了。其实就是通过改原型</p>
+<p>但是呢，这种方法还是有局限性的，我们不能覆盖所有的数组操作，同时，我们也不能响应到类似于<code>data.array.length = 0</code>这种操作</p>
+<h3 id="proxy-实现代理"><a href="#proxy-实现代理" class="headerlink" title="proxy 实现代理"></a>proxy 实现代理</h3><p>proxy 是 ES6 提供的，可以自定义对象的操作，跟 Object.defineProperty 的区别是，Proxy 所带来的，是对底层操作的拦截,我们可以直接拦截对代理对象的底层操作。这样我们相当于从一个对象的底层操作开始实现对它的监听。</p>
+<p>代码实现：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> createProxy = <span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> data === <span class="string">"object"</span> &amp;&amp; data.toString() === <span class="string">"[object Object]"</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> k <span class="keyword">in</span> data) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">typeof</span> data[k] === <span class="string">"object"</span>) &#123;</span><br><span class="line">        defineObjectReactive(data, k, data[k]);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        defineBasicReactive(data, k, data[k]);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">defineObjectReactive</span>(<span class="params">obj, key, value</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 递归</span></span><br><span class="line">  createProxy(value);</span><br><span class="line">  obj[key] = <span class="keyword">new</span> <span class="built_in">Proxy</span>(value, &#123;</span><br><span class="line">    <span class="keyword">set</span>(target, property, val, receiver) &#123;</span><br><span class="line">      <span class="keyword">if</span> (property !== <span class="string">"length"</span>) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"Set %s to %o"</span>, property, val);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Reflect</span>.set(target, property, val, receiver);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">defineBasicReactive</span>(<span class="params">obj, key, value</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">false</span>,</span><br><span class="line">    <span class="keyword">get</span>() &#123;</span><br><span class="line">      <span class="keyword">return</span> value;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">set</span>(newValue) &#123;</span><br><span class="line">      <span class="keyword">if</span> (value === newValue) <span class="keyword">return</span>;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">`发现 <span class="subst">$&#123;key&#125;</span> 属性 <span class="subst">$&#123;value&#125;</span> -&gt; <span class="subst">$&#123;newValue&#125;</span>`</span>);</span><br><span class="line">      value = newValue;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  createProxy,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://juejin.im/entry/6844903479044112391" target="_blank" rel="noopener">https://juejin.im/entry/6844903479044112391</a></p>
 <p>源码： <a href="https://github.com/yinjiangqaq/studyDiary/tree/master/vueReaction" target="_blank" rel="noopener">https://github.com/yinjiangqaq/studyDiary/tree/master/vueReaction</a></p>
@@ -428,7 +539,8 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  methods: &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    example: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="comment">// 修改数据</span></span><br><span class="line">      <span class="keyword">this</span>.message = <span class="string">"changed"</span>;</span><br><span class="line">      <span class="comment">// DOM 还没有更新</span></span><br><span class="line">      <span class="keyword">this</span>.$nextTick(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// DOM 现在更新了</span></span><br><span class="line">        <span class="comment">// `this` 绑定到当前实例,也就是当前的vue实例，已经更新过的vue实例</span></span><br><span class="line">        <span class="keyword">this</span>.doSomethingElse();</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p>然后注意的是，<code>this.$nextTick</code>其实第一个参数是回调函数，后面的参数是可以传进回调函数的参数</p>
-<h2 id="前端web性能优化的一些辅助工具"><a href="#前端web性能优化的一些辅助工具" class="headerlink" title="前端web性能优化的一些辅助工具"></a>前端web性能优化的一些辅助工具</h2><p><a href="https://blog.csdn.net/qq_35206244/article/details/79352363" target="_blank" rel="noopener">https://blog.csdn.net/qq_35206244/article/details/79352363</a></p>
+<h2 id="前端-web-性能优化的一些辅助工具"><a href="#前端-web-性能优化的一些辅助工具" class="headerlink" title="前端 web 性能优化的一些辅助工具"></a>前端 web 性能优化的一些辅助工具</h2><p><a href="https://blog.csdn.net/qq_35206244/article/details/79352363" target="_blank" rel="noopener">https://blog.csdn.net/qq_35206244/article/details/79352363</a></p>
+<h2 id="Vue-项目中一些注意的点"><a href="#Vue-项目中一些注意的点" class="headerlink" title="Vue 项目中一些注意的点"></a>Vue 项目中一些注意的点</h2><p><a href="https://juejin.im/post/6844903632815521799" target="_blank" rel="noopener">https://juejin.im/post/6844903632815521799</a></p>
 ]]></content>
       <categories>
         <category>前端开发</category>
@@ -1029,17 +1141,10 @@
   <entry>
     <title>浏览器安全方面的</title>
     <url>/2020/03/23/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AE%89%E5%85%A8%E6%96%B9%E9%9D%A2%E7%9A%84/</url>
-    <content><![CDATA[<h2 id="XSS攻击"><a href="#XSS攻击" class="headerlink" title="XSS攻击"></a>XSS攻击</h2><p>XSS攻击的全称是跨站脚本攻击，通过注入恶意的JavaScript代码进行攻击。</p>
-<p>分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为DOM型，反射型和存储型</p>
-<ul>
-<li>DOM-Based型：属于非持久型的XSS攻击，不需要服务端的参与，主要是因为一些前端代码的漏洞导致的，DOM 中的内联事件监听器，如 <code>location、onclick、onerror、onload、onmouseover</code>等，<code>a</code> 标签的 <code>href</code> 属性，img 的 <code>src</code>，JavaScript 的 <code>eval()</code>、<code>setTimeout()</code>、<code>setInterval()</code> 等，<strong>都能把字符串作为代码运行</strong>，拼接数据时需要注意。<code>innerHTML，outerHTML，document.write</code>与用户输入有关联时需要注意</li>
-</ul>
-<ul>
-<li>反射型： 也属于非持久型的XSS，需要经过服务器，但是不经过数据库。当用户打开带有恶意代码的URL，网站服务端将恶意代码从URL中取出，拼接再HTML中返回给浏览器。常见于网站搜索，跳转等等</li>
-</ul>
-<ul>
-<li>存储型：属于持久型XSS，需要经过服务器和数据库。当用户将恶意代码提交到了<strong>目标数据库</strong>，下次用户打开网站时，网站服务端把恶意代码从数据库取出，拼接再HTML中返回给浏览器。常见于带有用户保存数据的网站功能，如论坛发帖，商品评论，用户私信。（基本都是表单类的）</li>
-</ul>
+    <content><![CDATA[<h2 id="XSS-攻击"><a href="#XSS-攻击" class="headerlink" title="XSS 攻击"></a>XSS 攻击</h2><p>XSS 攻击的全称是跨站脚本攻击，通过注入恶意的 JavaScript 代码进行攻击。</p>
+<p>分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为 DOM 型，反射型和存储型</p>
+<p><a href="https://github.com/yinjiangqaq/studyDiary/blob/master/2020_8_24.md#%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2-xss-%E6%94%BB%E5%87%BB" target="_blank" rel="noopener">传送门</a></p>
+<h2 id="CSRF-攻击"><a href="#CSRF-攻击" class="headerlink" title="CSRF 攻击"></a>CSRF 攻击</h2><p><a href="https://github.com/yinjiangqaq/studyDiary/blob/master/2020_8_3.md#csrf" target="_blank" rel="noopener">传送门</a></p>
 ]]></content>
       <categories>
         <category>浏览器</category>

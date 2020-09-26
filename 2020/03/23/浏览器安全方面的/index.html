@@ -79,14 +79,14 @@
 
 
 
-<meta name="description" content="XSS攻击XSS攻击的全称是跨站脚本攻击，通过注入恶意的JavaScript代码进行攻击。 分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为DOM型，反射型和存储型  DOM-Based型：属于非持久型的XSS攻击，不需要服务端的参与，主要是因为一些前端代码的漏洞导致的，DOM 中的内联事件监听器，如 location、onclick、onerror、onload、onmou">
+<meta name="description" content="XSS 攻击XSS 攻击的全称是跨站脚本攻击，通过注入恶意的 JavaScript 代码进行攻击。 分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为 DOM 型，反射型和存储型 传送门 CSRF 攻击传送门">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浏览器安全方面的">
 <meta property="og:url" content="http://yoursite.com/2020/03/23/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AE%89%E5%85%A8%E6%96%B9%E9%9D%A2%E7%9A%84/index.html">
 <meta property="og:site_name" content="yinjiangQAQ Blog">
-<meta property="og:description" content="XSS攻击XSS攻击的全称是跨站脚本攻击，通过注入恶意的JavaScript代码进行攻击。 分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为DOM型，反射型和存储型  DOM-Based型：属于非持久型的XSS攻击，不需要服务端的参与，主要是因为一些前端代码的漏洞导致的，DOM 中的内联事件监听器，如 location、onclick、onerror、onload、onmou">
+<meta property="og:description" content="XSS 攻击XSS 攻击的全称是跨站脚本攻击，通过注入恶意的 JavaScript 代码进行攻击。 分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为 DOM 型，反射型和存储型 传送门 CSRF 攻击传送门">
 <meta property="article:published_time" content="2020-03-23T06:58:14.000Z">
-<meta property="article:modified_time" content="2020-03-23T16:29:43.192Z">
+<meta property="article:modified_time" content="2020-09-24T13:10:45.436Z">
 <meta property="article:author" content="yinjiangQAQ">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  367 字
+                  80 字
                 </span>
               
 
@@ -411,17 +411,10 @@
       
 
       
-        <h2 id="XSS攻击"><a href="#XSS攻击" class="headerlink" title="XSS攻击"></a>XSS攻击</h2><p>XSS攻击的全称是跨站脚本攻击，通过注入恶意的JavaScript代码进行攻击。</p>
-<p>分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为DOM型，反射型和存储型</p>
-<ul>
-<li>DOM-Based型：属于非持久型的XSS攻击，不需要服务端的参与，主要是因为一些前端代码的漏洞导致的，DOM 中的内联事件监听器，如 <code>location、onclick、onerror、onload、onmouseover</code>等，<code>a</code> 标签的 <code>href</code> 属性，img 的 <code>src</code>，JavaScript 的 <code>eval()</code>、<code>setTimeout()</code>、<code>setInterval()</code> 等，<strong>都能把字符串作为代码运行</strong>，拼接数据时需要注意。<code>innerHTML，outerHTML，document.write</code>与用户输入有关联时需要注意</li>
-</ul>
-<ul>
-<li>反射型： 也属于非持久型的XSS，需要经过服务器，但是不经过数据库。当用户打开带有恶意代码的URL，网站服务端将恶意代码从URL中取出，拼接再HTML中返回给浏览器。常见于网站搜索，跳转等等</li>
-</ul>
-<ul>
-<li>存储型：属于持久型XSS，需要经过服务器和数据库。当用户将恶意代码提交到了<strong>目标数据库</strong>，下次用户打开网站时，网站服务端把恶意代码从数据库取出，拼接再HTML中返回给浏览器。常见于带有用户保存数据的网站功能，如论坛发帖，商品评论，用户私信。（基本都是表单类的）</li>
-</ul>
+        <h2 id="XSS-攻击"><a href="#XSS-攻击" class="headerlink" title="XSS 攻击"></a>XSS 攻击</h2><p>XSS 攻击的全称是跨站脚本攻击，通过注入恶意的 JavaScript 代码进行攻击。</p>
+<p>分类：按时间来划分的话，可以分为持久型和非持久型。按照类型的话可以分为 DOM 型，反射型和存储型</p>
+<p><a href="https://github.com/yinjiangqaq/studyDiary/blob/master/2020_8_24.md#%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2-xss-%E6%94%BB%E5%87%BB" target="_blank" rel="noopener">传送门</a></p>
+<h2 id="CSRF-攻击"><a href="#CSRF-攻击" class="headerlink" title="CSRF 攻击"></a>CSRF 攻击</h2><p><a href="https://github.com/yinjiangqaq/studyDiary/blob/master/2020_8_3.md#csrf" target="_blank" rel="noopener">传送门</a></p>
 
       
     </div>
@@ -558,7 +551,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -649,7 +642,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS攻击"><span class="nav-number">1.</span> <span class="nav-text">XSS攻击</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS-攻击"><span class="nav-number">1.</span> <span class="nav-text">XSS 攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSRF-攻击"><span class="nav-number">2.</span> <span class="nav-text">CSRF 攻击</span></a></li></ol></div>
             
 
           </div>
@@ -669,7 +662,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-08-28</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020-09-27</span>
   <span class="with-love">
     <i class="fa fa-star"></i>
   </span>
