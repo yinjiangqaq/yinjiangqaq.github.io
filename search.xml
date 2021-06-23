@@ -2170,6 +2170,9 @@
 
 <p>打开本地 localhost:4000，看复制功能是否可以正常实现。</p>
 <h2 id="关于解决-hexo-不兼容-的问题"><a href="#关于解决-hexo-不兼容-的问题" class="headerlink" title="关于解决 hexo 不兼容 }的问题"></a>关于解决 hexo 不兼容  {{}} {}的问题</h2><p><a href="http://xcoding.tech/2020/01/18/hexo/%E5%A6%82%E4%BD%95%E4%BB%8E%E6%A0%B9%E6%9C%AC%E8%A7%A3%E5%86%B3hexo%E4%B8%8D%E5%85%BC%E5%AE%B9%7B%7B%7D%7D%E6%A0%87%E7%AD%BE%E9%97%AE%E9%A2%98/" target="_blank" rel="noopener">http://xcoding.tech/2020/01/18/hexo/%E5%A6%82%E4%BD%95%E4%BB%8E%E6%A0%B9%E6%9C%AC%E8%A7%A3%E5%86%B3hexo%E4%B8%8D%E5%85%BC%E5%AE%B9%7B%7B%7D%7D%E6%A0%87%E7%AD%BE%E9%97%AE%E9%A2%98/</a></p>
+<h2 id="关于解决-hexo-博客部署到-github-时，提示说-typeError-ERR-INVALID-ARG-TYPE-The-“mode”-argument-must-be-integer"><a href="#关于解决-hexo-博客部署到-github-时，提示说-typeError-ERR-INVALID-ARG-TYPE-The-“mode”-argument-must-be-integer" class="headerlink" title="关于解决 hexo 博客部署到 github 时，提示说 typeError [ERR_INVALID_ARG_TYPE]: The “mode” argument must be integer."></a>关于解决 hexo 博客部署到 github 时，提示说 typeError [ERR_INVALID_ARG_TYPE]: The “mode” argument must be integer.</h2><p>解决方案是： 本机的 Node 版本过高的问题，需要安装一个 nvm node 版本控制器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvm 安装之后，</span><br><span class="line"></span><br><span class="line">nvm install 12.16.0 &#x2F;&#x2F;下载相关版本的node</span><br><span class="line"></span><br><span class="line">nvm use 12.16.0 &#x2F;&#x2F;切换到对应的版本</span><br></pre></td></tr></table></figure>
+<p>然后重新部署 <code>hexo d</code></p>
 ]]></content>
       <categories>
         <category>Hexo</category>
