@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaScript," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="PromisePromise 出现的原因在 promise 出现以前，我们处理多个异步请求嵌套时，代码往往是这样的： 123456789let fs &#x3D; require(&quot;fs&quot;);fs.readFile(&quot;.&#x2F;name.txt&quot;, &quot;utf8&quot;, function (err, data) &amp;#123;  fs.readFile(data, &quot;utf8&quot;, function (err, data)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Promise实现">
+<meta property="og:url" content="http://yoursite.com/2021/05/18/Promise%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="PromisePromise 出现的原因在 promise 出现以前，我们处理多个异步请求嵌套时，代码往往是这样的： 123456789let fs &#x3D; require(&quot;fs&quot;);fs.readFile(&quot;.&#x2F;name.txt&quot;, &quot;utf8&quot;, function (err, data) &amp;#123;  fs.readFile(data, &quot;utf8&quot;, function (err, data)">
+<meta property="article:published_time" content="2021-05-18T15:55:50.000Z">
+<meta property="article:modified_time" content="2021-05-18T15:57:33.993Z">
+<meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/05/18/Promise实现/"/>
+
+
+
+
+
+  <title>Promise实现 | yinjiangQAQ Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yinjiangQAQ Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/18/Promise%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Promise实现</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-18T23:55:50+08:00">
+                2021-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h1><h2 id="Promise-出现的原因"><a href="#Promise-出现的原因" class="headerlink" title="Promise 出现的原因"></a>Promise 出现的原因</h2><p>在 promise 出现以前，我们处理多个异步请求嵌套时，代码往往是这样的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">"fs"</span>);</span><br><span class="line"></span><br><span class="line">fs.readFile(<span class="string">"./name.txt"</span>, <span class="string">"utf8"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">  fs.readFile(data, <span class="string">"utf8"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">    fs.readFile(data, <span class="string">"utf8"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(data);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>为了拿到回调的结果，我们必须一层一层的嵌套，可以说是相当恶心了。而且基本上我们还要对每次请求的结果进行一系列的处理，使得代码变的更加难以阅读和难以维护，这就是传说中臭名昭著的<strong>回调地狱</strong>～产生回调地狱的原因归结起来有两点：</p>
+<ol>
+<li>嵌套调用，第一个函数的输出往往是第二个函数的输入；</li>
+<li>处理多个异步请求并发，开发时往往需要同步请求最终的结果。</li>
+</ol>
+<p>所以为了解决嵌套调用产生的回调地狱和合并多个任务请求的结果(Promise.all)，产生了 promise。</p>
+<p>以上面的例子，我们使用 promise 来实现是怎样的？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">"fs"</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">read</span>(<span class="params">filename</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    fs.readFile(filename, <span class="string">"utf8"</span>, (err, data) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) reject(err);</span><br><span class="line">      resolve(data);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">read(<span class="string">"./name.txt"</span>)</span><br><span class="line">  .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> read(data);</span><br><span class="line">  &#125;)</span><br><span class="line">  .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> read(data);</span><br><span class="line">  &#125;)</span><br><span class="line">  .then(</span><br><span class="line">    (data) =&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(data);</span><br><span class="line">    &#125;,</span><br><span class="line">    (err) =&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125;</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+<p>使用了 promise 之后，之前的臃肿的嵌套变得了线性多了和简洁多了。</p>
+<h2 id="如何实现-promise"><a href="#如何实现-promise" class="headerlink" title="如何实现 promise"></a>如何实现 promise</h2><h3 id="基础版的-promise"><a href="#基础版的-promise" class="headerlink" title="基础版的 promise"></a>基础版的 promise</h3><p>回顾一下最简单的 Promise 的使用方式</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> p1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"create a promise"</span>);</span><br><span class="line">  resolve(<span class="string">"成功了"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"after new promise"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> p2 = p1.then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"失败了"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> p3 = p2.then(</span><br><span class="line">  (data) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"success"</span>, data);</span><br><span class="line">  &#125;,</span><br><span class="line">  (err) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"faild"</span>, err);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// "create a promise"</span></span><br><span class="line"><span class="comment">// "after new promise"</span></span><br><span class="line"><span class="comment">// "成功了"</span></span><br><span class="line"><span class="comment">// "faild Error: 失败了"</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以了解到 我们在调用 promise 时，会返回一个 Promise 对象。然鹅在我们构建 promise 对象时，需要传入一个<strong>executor 函数</strong>，promise 的主要业务流程都在 executor 函数中执行。如果运行 executor 函数成功，会调用 resolve 函数。如果执行失败，则调用 reject 函数。Promise 的状态不可逆，同时调用 resovle 函数和 reject 函数，默认会采取第一次调用的结果。</p>
+<p>结合 <a href="https://promisesaplus.com/" target="_blank" rel="noopener">Promise/A+</a>的规范，我们可以总结出 promise 具有的基本特征：</p>
+<ol>
+<li>promise 有三个状态：pending，fulfilled，or rejected；</li>
+<li>new promise 时， 需要传递一个 executor()执行器，执行器立即执行</li>
+<li>executor 接受两个参数，分别是 resolve 和 reject；</li>
+<li>promise 的默认状态是 pending；</li>
+<li>promise 有一个 value 保存成功状态的值，可以是 undefined/thenable/promise；</li>
+<li>promise 有一个 reason 保存失败状态的值</li>
+<li>promise 只能从 pending 到 rejected, 或者从 pending 到 fulfilled，状态一旦确认，就不会再改变</li>
+<li>promise 必须有一个 then 方法，then 接收两个参数，分别是 promise 成功的回调 onFulfilled, 和 promise 失败的回调 onRejected；</li>
+<li>如果调用 then 时，promise 已经成功，则执行 onFulfilled，参数是 promise 的 value</li>
+<li>如果调用 then 时，promise 已经失败，那么执行 onRejected, 参数是 promise 的 reason</li>
+<li>如果 then 中抛出了异常，那么就会把这个异常作为参数，传递给下一个 then 的失败的回调 onRejected</li>
+</ol>
+<p>经过上面的总结，我们可以试着实现一个基本的 promise</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 三个状态：PENDING、FULFILLED、REJECTED</span></span><br><span class="line"><span class="keyword">const</span> PENDING = <span class="string">"PENDING"</span>;</span><br><span class="line"><span class="keyword">const</span> FULFILLED = <span class="string">"FULFILLED"</span>;</span><br><span class="line"><span class="keyword">const</span> REJECTED = <span class="string">"REJECTED"</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">myPromise</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(executor) &#123;</span><br><span class="line">    <span class="comment">//构造函数，默认初始状态为pending,value和reason为undefined，然后执行executor函数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.status = PENDING;</span><br><span class="line">    <span class="keyword">this</span>.value = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">this</span>.reason = <span class="literal">undefined</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//执行成功调用的方法</span></span><br><span class="line">    <span class="keyword">let</span> resolve = <span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="keyword">this</span>.status = FULFILLED;</span><br><span class="line">        <span class="keyword">this</span>.value = data;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//执行失败调用的方法</span></span><br><span class="line">    <span class="keyword">let</span> reject = <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="keyword">this</span>.status = REJECTED;</span><br><span class="line">        <span class="keyword">this</span>.reason = err;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//执行executor函数,将resolve和reject函数作为参数</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      executor(resolve, reject);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="comment">//中间执行出错的话，将错误reject传出去</span></span><br><span class="line">      reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//promise对象还有一个then函数成员，应该作为类promise的方法成员，接受两个参数onFulfilled,onRejected</span></span><br><span class="line">  then(onFulfilled, onRejected) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.status === FULFILLED) &#123;</span><br><span class="line">      onFulfilled(<span class="keyword">this</span>.value); <span class="comment">//如果一个new promise()的promise对象，调用 then函数的话，此时this.value 是内部获取得到的。</span></span><br><span class="line">      <span class="comment">//因为此时的this指向new promise()创建出来的对象</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.status === REJECTED) &#123;</span><br><span class="line">      onRejected(<span class="keyword">this</span>.reason);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//写完测试一下</span></span><br><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> myPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  resolve(<span class="string">"成功"</span>);</span><br><span class="line">&#125;).then(</span><br><span class="line">  (data) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"success"</span>, data);</span><br><span class="line">  &#125;,</span><br><span class="line">  (err) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"faild"</span>, err);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">//控制台输出</span></span><br><span class="line"><span class="comment">//"success 成功"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="支持异步操作的-promise"><a href="#支持异步操作的-promise" class="headerlink" title="支持异步操作的 promise"></a>支持异步操作的 promise</h3><p>现在我们已经实现了一个基础版的 promise，但是还是有缺陷的，因为我们上面的 promise 只能处理同步操作，如果在 executor 函数中，传入异步操作的话，会发生什么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> myPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">//传入异步操作</span></span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    resolve(<span class="string">"成功"</span>);</span><br><span class="line">  &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;).then(</span><br><span class="line">  (data) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"success"</span>, data);</span><br><span class="line">  &#125;,</span><br><span class="line">  (err) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"faild"</span>, err);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>我们会发现我们的控制台什么输出都没有，promise 没有任何返回。</p>
+<p>因为 promise 调用 then 方法时，当前的 promise 并没有成功，一直处于 <code>pending</code> 状态。所以如果当调用 then 方法时，当前状态是 <code>pending</code>，我们需要先将成功和失败的回调分别存放起来，在 <code>executor()</code>的异步任务被执行时，触发 <code>resolve</code> 或 <code>reject</code>，依次调用成功或失败的回调。</p>
+<p>结合这个思路我们优化一下我们的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 三个状态：PENDING、FULFILLED、REJECTED</span></span><br><span class="line"><span class="keyword">const</span> PENDING = <span class="string">"PENDING"</span>;</span><br><span class="line"><span class="keyword">const</span> FULFILLED = <span class="string">"FULFILLED"</span>;</span><br><span class="line"><span class="keyword">const</span> REJECTED = <span class="string">"REJECTED"</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">myPromise</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(executor) &#123;</span><br><span class="line">    <span class="comment">//构造函数，默认初始状态为pending,value和reason为undefined，然后执行executor函数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.status = PENDING;</span><br><span class="line">    <span class="keyword">this</span>.value = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">this</span>.reason = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">this</span>.onResolvedCallbacks = []; <span class="comment">//存放执行成功的回调</span></span><br><span class="line">    <span class="keyword">this</span>.onRejectedCallbacks = []; <span class="comment">//存放执行失败的回调</span></span><br><span class="line">    <span class="comment">//执行成功调用的方法</span></span><br><span class="line">    <span class="keyword">let</span> resolve = <span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="keyword">this</span>.status = FULFILLED;</span><br><span class="line">        <span class="keyword">this</span>.value = data;</span><br><span class="line">        <span class="comment">//当异步函数真正执行到resolve操作的时候，再把回调拿出来执行</span></span><br><span class="line">        <span class="keyword">this</span>.onResolvedCallbacks.forEach(<span class="function">(<span class="params">fn</span>) =&gt;</span> fn());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//执行失败调用的方法</span></span><br><span class="line">    <span class="keyword">let</span> reject = <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="keyword">this</span>.status = REJECTED;</span><br><span class="line">        <span class="keyword">this</span>.reason = err;</span><br><span class="line">        <span class="comment">//当异步函数真正执行到reject操作的时候，再把回调拿出来执行</span></span><br><span class="line">        <span class="keyword">this</span>.onRejectedCallbacks.forEach(<span class="function">(<span class="params">fn</span>) =&gt;</span> fn());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//执行executor函数,将resolve和reject函数作为参数</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      executor(resolve, reject);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="comment">//中间执行出错的话，将错误reject传出去</span></span><br><span class="line">      reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//promise对象还有一个then函数成员，应该作为类promise的方法成员，接受两个参数onFulfilled,onRejected</span></span><br><span class="line">  then(onFulfilled, onRejected) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.status === FULFILLED) &#123;</span><br><span class="line">      onFulfilled(<span class="keyword">this</span>.value); <span class="comment">//如果一个new promise()的promise对象，调用 then函数的话，此时this.value 是内部获取得到的。</span></span><br><span class="line">      <span class="comment">//因为此时的this指向new promise()创建出来的对象</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.status === REJECTED) &#123;</span><br><span class="line">      onRejected(<span class="keyword">this</span>.reason);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">      <span class="comment">// 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行</span></span><br><span class="line">      <span class="keyword">this</span>.onResolvedCallbacks.push(<span class="function"><span class="params">()</span> =&gt;</span> onFulfilled(<span class="keyword">this</span>.value));</span><br><span class="line">      <span class="keyword">this</span>.onRejectedCallbacks.push(<span class="function"><span class="params">()</span> =&gt;</span> onRejected(<span class="keyword">this</span>.reason));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> myPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    resolve(<span class="string">"成功"</span>);</span><br><span class="line">  &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;).then(</span><br><span class="line">  (data) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"success"</span>, data);</span><br><span class="line">  &#125;,</span><br><span class="line">  (err) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"faild"</span>, err);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>重新执行，控制台等待大概一秒钟之后输出<code>&quot;success 成功&quot;</code>这样就解决了异步的问题。</p>
+<p>其实熟悉熟悉设计模式的同学，应该意识到了这其实是一个发布订阅模式，这种收集依赖 -&gt; 触发通知 -&gt; 取出依赖执行的方式，被广泛运用于发布订阅模式的实现。</p>
+<h3 id="then-的链式调用-和值的穿透特性"><a href="#then-的链式调用-和值的穿透特性" class="headerlink" title="then 的链式调用 和值的穿透特性"></a>then 的链式调用 和值的穿透特性</h3><p>我们都知道，promise 的优势在于可以链式调用。在我们使用 Promise 的时候，当 then 函数中 return 了一个值，不管是什么值，我们都能在下一个 then 中获取到，这就是所谓的 then 的链式调用。而且，当我们不在 then 中放入参数，例：promise.then().then()，那么其后面的 then 依旧可以得到之前 then 返回的值，这就是所谓的值的穿透。那具体如何实现呢？简单思考一下，如果每次调用 then 的时候，我们都重新创建一个 promise 对象，并把上一个 then 的返回结果传给这个新的 promise 的 then 方法，不就可以一直 then 下去了么？</p>
+<p>我们继续完善一下之前的实现代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 三个状态：PENDING、FULFILLED、REJECTED</span></span><br><span class="line"><span class="keyword">const</span> PENDING = <span class="string">"PENDING"</span>;</span><br><span class="line"><span class="keyword">const</span> FULFILLED = <span class="string">"FULFILLED"</span>;</span><br><span class="line"><span class="keyword">const</span> REJECTED = <span class="string">"REJECTED"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> resolvePromise = <span class="function">(<span class="params">promise2, x, resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">//自己等待自己是一个错误的实现，用一个类型错误结束掉promise</span></span><br><span class="line">  <span class="keyword">if</span> (promise2 === x) &#123;</span><br><span class="line">    <span class="keyword">return</span> reject(</span><br><span class="line">      <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">"Chaining cycle detected for promise #&lt;Promise&gt;"</span>)</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> called;</span><br><span class="line">  <span class="keyword">if</span> ((<span class="keyword">typeof</span> x === <span class="string">"object"</span> &amp;&amp; x !== <span class="literal">null</span>) || <span class="keyword">typeof</span> x === <span class="string">"function"</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">//为了判断resolve 过的就不用再reject了，比如 reject 和resolve 同时调用的时候</span></span><br><span class="line">      <span class="keyword">let</span> then = x.then;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">typeof</span> then === <span class="string">"function"</span>) &#123;</span><br><span class="line">        <span class="comment">//不要写成x.then，直接then.call 就可以了 因为x.then 会再次取值</span></span><br><span class="line">        then.call(</span><br><span class="line">          x,</span><br><span class="line">          (y) =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (called) <span class="keyword">return</span>;</span><br><span class="line">            called = <span class="literal">true</span>;</span><br><span class="line">            <span class="comment">//递归解析的过程中 因为Promise中还有promise</span></span><br><span class="line">            resolvePromise(promise2, y, resolve, reject);</span><br><span class="line">          &#125;,</span><br><span class="line">          (r) =&gt; &#123;</span><br><span class="line">            <span class="comment">//只要失败就失败</span></span><br><span class="line">            <span class="keyword">if</span> (called) <span class="keyword">return</span>;</span><br><span class="line">            called = <span class="literal">true</span>;</span><br><span class="line">            reject(r);</span><br><span class="line">          &#125;</span><br><span class="line">        );</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果x.then是一个普通值就直接返回resolve 作为结果</span></span><br><span class="line">        resolve(x);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="keyword">if</span> (called) <span class="keyword">return</span>;</span><br><span class="line">      called = <span class="literal">true</span>;</span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">//如果x是一个普通值就直接返回resolve 作为结果</span></span><br><span class="line">    resolve(x);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">myPromise</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(executor) &#123;</span><br><span class="line">    <span class="comment">//构造函数，默认初始状态为pending,value和reason为undefined，然后执行executor函数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.status = PENDING;</span><br><span class="line">    <span class="keyword">this</span>.value = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">this</span>.reason = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">this</span>.onResolvedCallbacks = []; <span class="comment">//存放执行成功的回调</span></span><br><span class="line">    <span class="keyword">this</span>.onRejectedCallbacks = []; <span class="comment">//存放执行失败的回调</span></span><br><span class="line">    <span class="comment">//执行成功调用的方法</span></span><br><span class="line">    <span class="keyword">let</span> resolve = <span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="keyword">this</span>.status = FULFILLED;</span><br><span class="line">        <span class="keyword">this</span>.value = data;</span><br><span class="line">        <span class="comment">//当异步函数真正执行到resolve操作的时候，再把回调拿出来执行</span></span><br><span class="line">        <span class="keyword">this</span>.onResolvedCallbacks.forEach(<span class="function">(<span class="params">fn</span>) =&gt;</span> fn());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//执行失败调用的方法</span></span><br><span class="line">    <span class="keyword">let</span> reject = <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="keyword">this</span>.status = REJECTED;</span><br><span class="line">        <span class="keyword">this</span>.reason = err;</span><br><span class="line">        <span class="comment">//当异步函数真正执行到reject操作的时候，再把回调拿出来执行</span></span><br><span class="line">        <span class="keyword">this</span>.onRejectedCallbacks.forEach(<span class="function">(<span class="params">fn</span>) =&gt;</span> fn());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//执行executor函数,将resolve和reject函数作为参数</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      executor(resolve, reject);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="comment">//中间执行出错的话，将错误reject传出去</span></span><br><span class="line">      reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//promise对象还有一个then函数成员，应该作为类promise的方法成员，接受两个参数onFulfilled,onRejected</span></span><br><span class="line">  then(onFulfilled, onRejected) &#123;</span><br><span class="line">    <span class="comment">//解决onFufilled,onRejected没有传值的问题</span></span><br><span class="line">    onFulfilled = <span class="keyword">typeof</span> onFulfilled === <span class="string">"function"</span> ? onFulfilled : <span class="function">(<span class="params">v</span>) =&gt;</span> v;</span><br><span class="line">    <span class="comment">//因为错误的值要让后面访问到，所以这里也要跑出个错误，不然会在之后 then 的 resolve 中捕获</span></span><br><span class="line">    onRejected =</span><br><span class="line">      <span class="keyword">typeof</span> onRejected === <span class="string">"function"</span></span><br><span class="line">        ? onRejected</span><br><span class="line">        : <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> err;</span><br><span class="line">          &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//每次调用then ,链式调用，都返回一个新的promise</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> promise2 = <span class="keyword">new</span> myPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === FULFILLED) &#123;</span><br><span class="line">        setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> x = onFulfilled(<span class="keyword">this</span>.value);</span><br><span class="line">            resolvePromise(promise2, x, resolve, reject);</span><br><span class="line">          &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">            reject(err);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;, <span class="number">0</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === REJECTED) &#123;</span><br><span class="line">        setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> x = onRejected(<span class="keyword">this</span>.reason);</span><br><span class="line">            resolvePromise(promise2, x, resolve, reject);</span><br><span class="line">          &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">            reject(err);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;, <span class="number">0</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.status === PENDING) &#123;</span><br><span class="line">        <span class="comment">// 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行</span></span><br><span class="line">        <span class="keyword">this</span>.onResolvedCallbacks.push(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">              <span class="keyword">let</span> x = onFulfilled(<span class="keyword">this</span>.value);</span><br><span class="line">              resolvePromise(promise2, x, resolve, reject);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">              reject(e);</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;, <span class="number">0</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">this</span>.onRejectedCallbacks.push(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">              <span class="keyword">let</span> x = onRejected(<span class="keyword">this</span>.reason);</span><br><span class="line">              resolvePromise(promise2, x, resolve, reject);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">              reject(e);</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;, <span class="number">0</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// if (this.status === FULFILLED) &#123;</span></span><br><span class="line">    <span class="comment">//   onFulfilled(this.value); //如果一个new promise()的promise对象，调用 then函数的话，此时this.value 是内部获取得到的。</span></span><br><span class="line">    <span class="comment">//   //因为此时的this指向new promise()创建出来的对象</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> promise2;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> myPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  reject(<span class="string">"失败"</span>);</span><br><span class="line">&#125;)</span><br><span class="line">  .then()</span><br><span class="line">  .then()</span><br><span class="line">  .then(</span><br><span class="line">    (data) =&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(data);</span><br><span class="line">    &#125;,</span><br><span class="line">    (err) =&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"err"</span>, err);</span><br><span class="line">    &#125;</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+<p>控制台输出<code>err 失败</code> 至此，我们已经完成了 promise 最关键的部分：then 的链式调用和值的穿透。搞清楚了 then 的链式调用和值的穿透，你也就搞清楚了 Promise。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="https://www.zhihu.com/search?type=content&amp;q=promise%E5%AE%9E%E7%8E%B0" target="_blank" rel="noopener">https://www.zhihu.com/search?type=content&amp;q=promise%E5%AE%9E%E7%8E%B0</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"><i class="fa fa-tag"></i> JavaScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/" rel="next" title="githubAction实践">
+                <i class="fa fa-chevron-left"></i> githubAction实践
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/iu.jpg"
+                alt="yinjiangQAQ" />
+            
+              <p class="site-author-name" itemprop="name">yinjiangQAQ</p>
+              <p class="site-description motion-element" itemprop="description">to rise abruptly based on its accumulated strength</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yinjiangqaq" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/yinjiangQAQ" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+<div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=0&id=4875667277&auto=1&height=32"></iframe>
+</div>
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-book"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xz.aliyun.com/t/1121" title="Web日志安全分析浅谈" target="_blank">Web日志安全分析浅谈</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/zgcr654321/article/details/86751765" title="hexo主题个性化设置" target="_blank">hexo主题个性化设置</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Promise"><span class="nav-number">1.</span> <span class="nav-text">Promise</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Promise-出现的原因"><span class="nav-number">1.1.</span> <span class="nav-text">Promise 出现的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何实现-promise"><span class="nav-number">1.2.</span> <span class="nav-text">如何实现 promise</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础版的-promise"><span class="nav-number">1.2.1.</span> <span class="nav-text">基础版的 promise</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支持异步操作的-promise"><span class="nav-number">1.2.2.</span> <span class="nav-text">支持异步操作的 promise</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#then-的链式调用-和值的穿透特性"><span class="nav-number">1.2.3.</span> <span class="nav-text">then 的链式调用 和值的穿透特性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">1.3.</span> <span class="nav-text">引用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021-06-23</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yinjiangQAQ</span>
+
+  
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访客量
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.4"></script>
+
+
+  
+
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

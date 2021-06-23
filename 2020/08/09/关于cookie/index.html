@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="cookie," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言2 月份发布的 Chrome 80 版本中默认屏蔽了第三方的 Cookie，在灰度期间，就导致了阿里系的很多应用都产生了问题，为此还专门成立了小组，推动各 BU 进行改造，目前阿里系基本已经改造完成。所有的前端团队估计都收到过通知，也着实加深了一把大家对于 Cookie 的理解，所以很可能就此出个面试题，而即便不是面试题，当问到 HTTP 相关内容的时候，不妨也扯到这件事情来，一能表明你对前端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于cookie">
+<meta property="og:url" content="http://yoursite.com/2020/08/09/%E5%85%B3%E4%BA%8Ecookie/index.html">
+<meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="前言2 月份发布的 Chrome 80 版本中默认屏蔽了第三方的 Cookie，在灰度期间，就导致了阿里系的很多应用都产生了问题，为此还专门成立了小组，推动各 BU 进行改造，目前阿里系基本已经改造完成。所有的前端团队估计都收到过通知，也着实加深了一把大家对于 Cookie 的理解，所以很可能就此出个面试题，而即便不是面试题，当问到 HTTP 相关内容的时候，不妨也扯到这件事情来，一能表明你对前端">
+<meta property="og:image" content="http://yoursite.com/2020/08/09/%E5%85%B3%E4%BA%8Ecookie/samesite.jpg">
+<meta property="article:published_time" content="2020-08-09T11:38:49.000Z">
+<meta property="article:modified_time" content="2020-10-30T12:00:58.000Z">
+<meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="cookie">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/08/09/%E5%85%B3%E4%BA%8Ecookie/samesite.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/08/09/关于cookie/"/>
+
+
+
+
+
+  <title>关于cookie | yinjiangQAQ Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yinjiangQAQ Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/09/%E5%85%B3%E4%BA%8Ecookie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">关于cookie</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-09T19:38:49+08:00">
+                2020-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cookie/" itemprop="url" rel="index">
+                    <span itemprop="name">cookie</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.9k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>2 月份发布的 Chrome 80 版本中默认屏蔽了第三方的 Cookie，在灰度期间，就导致了阿里系的很多应用都产生了问题，为此还专门成立了小组，推动各 BU 进行改造，目前阿里系基本已经改造完成。所有的前端团队估计都收到过通知，也着实加深了一把大家对于 Cookie 的理解，所以很可能就此出个面试题，而即便不是面试题，当问到 HTTP 相关内容的时候，不妨也扯到这件事情来，一能表明你对前端时事的跟进，二还能借此引申到前端安全方面的内容，为你的面试加分。</p>
+<p>所以本文就给大家介绍一下浏览器的 Cookie 以及这个”火热”的 SameSite 属性</p>
+<h2 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h2><p>一般我们都会说 “HTTP 是一个无状态的协议”，不过要注意这里的 HTTP 其实是指 HTTP 1.x，而所谓无状态协议，<strong>简单的理解就是即使同一个客户端连续两次发送请求给服务器，服务器也识别不出这是同一个客户端发送的请求</strong>，这导致的问题就比如你加了一个商品到购物车中，但因为识别不出是同一个客户端，你刷新下页面就没有了……所以我们需要一种东西来<strong>保持状态</strong></p>
+<h2 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h2><p>为了解决 HTTP 无状态导致的问题，后来出现了 Cookie。不过这样说可能会让你产生一些误解，首先无状态并不是不好，有优点，但也会导致一些问题。而 Cookie 的存在也不是为了解决通讯协议无状态的问题，只是<strong>为了解决客户端与服务端会话状态的问题</strong>，这个状态是指<strong><code>后端服务</code>的状态而非通讯协议的状态</strong>。</p>
+<p>Cookie（复数形态 Cookies），类型为「小型文本文件」，指某些网站为了辨别用户身份而储存在用户本地终端上的数据。</p>
+<p>作为一段一般不超过 4KB 的小型文本数据，它由一个名称（Name）、一个值（Value）和其它几个用于控制 Cookie 有效期、安全性、使用范围的可选属性组成，这些涉及的属性我们会在后面会介绍。</p>
+<h2 id="Cookie-的设置"><a href="#Cookie-的设置" class="headerlink" title="Cookie 的设置"></a>Cookie 的设置</h2><ul>
+<li>客户端发送 HTTP 请求到服务器</li>
+<li>当服务器收到 HTTP 请求时，在响应头里面添加一个 Set-Cookie 字段</li>
+<li>浏览器收到响应后保存下 Cookie</li>
+<li>之后对该服务器每一次请求中都通过 Cookie 字段将 Cookie 信息发送给服务器。</li>
+</ul>
+<h2 id="Cookie-的属性"><a href="#Cookie-的属性" class="headerlink" title="Cookie 的属性"></a>Cookie 的属性</h2><h3 id="Name-Value"><a href="#Name-Value" class="headerlink" title="Name/Value"></a>Name/Value</h3><p>用 JavaScript 操作 Cookie 的时候注意对 Value 进行<code>编码处理</code>。为了安全的加密</p>
+<h3 id="Expires"><a href="#Expires" class="headerlink" title="Expires"></a>Expires</h3><p>Expires 用于设置 Cookie 的过期时间(时间戳）。比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: id&#x3D;a3fWa; Expires&#x3D;Wed, 21 Oct 2015 07:28:00 GMT;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Max-Age"><a href="#Max-Age" class="headerlink" title="Max-Age"></a>Max-Age</h3><p>Max-Age 用于设置在 Cookie 失效之前需要经过的秒数。比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: id&#x3D;a3fWa; Max-Age&#x3D;604800;</span><br></pre></td></tr></table></figure>
+
+<p>Max-Age 可以为正数、负数、甚至是 0。</p>
+<p>如果 max-Age 属性为正数时，浏览器会将其持久化，即写到对应的 Cookie 文件中。</p>
+<p>当 max-Age 属性为<strong>负数</strong>，则表示该 Cookie 只是一个<strong>会话性 Cookie</strong>。</p>
+<p>当 max-Age 为 0 时，则会<strong>立即删除这个 Cookie</strong>。</p>
+<p>假如 Expires 和 Max-Age 都存在，Max-Age 优先级更高。</p>
+<h2 id="Domain"><a href="#Domain" class="headerlink" title="Domain"></a>Domain</h2><p>Domain 指定了 Cookie 可以送达的主机名。假如没有指定，那么默认值为当前文档访问地址中的主机部分（但是不包含子域名）。</p>
+<p>像淘宝首页设置的 Domain 就是 <code>.http://taobao.com</code>，这样无论是 <code>a.taobao.com</code> 还是 <code>b.taobao.com</code> 都可以使用 <code>Cookie</code>。</p>
+<p>在这里注意的是，<code>不能跨域设置 Cookie</code>，比如阿里域名下的页面把 Domain 设置成百度是无效的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: qwerty&#x3D;219ffwef9w0f; Domain&#x3D;baidu.com; Path&#x3D;&#x2F;; Expires&#x3D;Wed, 30 Aug 2020 00:00:00 GMT</span><br></pre></td></tr></table></figure>
+
+<h3 id="Path"><a href="#Path" class="headerlink" title="Path"></a>Path</h3><p>Path 指定了一个 URL 路径，这个路径必须出现在要请求的资源的路径中才可以发送 Cookie 首部。比如设置 <strong>Path=/docs，/docs/Web/ 下的资源会带 Cookie 首部，/test 则不会携带 Cookie 首部。</strong></p>
+<p>Domain 和 Path 标识共同定义了 Cookie 的作用域：即 Cookie 应该发送给哪些 URL。</p>
+<h3 id="Secure-属性"><a href="#Secure-属性" class="headerlink" title="Secure 属性"></a>Secure 属性</h3><p>标记为 Secure 的 Cookie <strong>只应通过被 HTTPS 协议加密过的请求发送给服务端</strong>。使用 HTTPS 安全协议，可以保护 Cookie 在浏览器和 Web 服务器间的传输过程中不被窃取和篡改。</p>
+<h3 id="HTTPOnly"><a href="#HTTPOnly" class="headerlink" title="HTTPOnly"></a>HTTPOnly</h3><p>设置 HTTPOnly 属性可以防止客户端脚本通过 document.cookie 等方式访问 Cookie，有助于避免 XSS 攻击。</p>
+<h3 id="SameSite"><a href="#SameSite" class="headerlink" title="SameSite"></a>SameSite</h3><p>SameSite 是最近非常值得一提的内容，因为 2 月份发布的 Chrome80 版本中默认屏蔽了第三方的 Cookie，这会导致阿里系的很多应用都产生问题，为此还专门成立了问题小组，推动各 BU 进行改造。</p>
+<p>SameSite 属性可以让 Cookie 在跨站请求时不会被发送，从而可以阻止跨站请求伪造攻击（CSRF）<br>SameSite 可以有下面三种值：</p>
+<ul>
+<li>Strict 仅允许一方请求携带 Cookie，即浏览器将只发送相同站点请求的 Cookie，即当前网页 URL 与请求目标 URL 完全一致。</li>
+<li>Lax 允许部分第三方请求携带 Cookie<br>None 无论是否跨站都会发送 Cookie</li>
+<li>之前默认是 None 的，Chrome80 后默认是 <code>Lax</code>。</li>
+</ul>
+<h3 id="跨域和跨站"><a href="#跨域和跨站" class="headerlink" title="跨域和跨站"></a>跨域和跨站</h3><p>首先要理解的一点就是跨站和跨域是不同的。同站(same-site)/跨站(cross-site)」和第一方(first-party)/第三方(third-party)是等价的。但是与浏览器同源策略（SOP）中的「同源(same-origin)/跨域(cross-origin)」是完全不同的概念。</p>
+<p>同源策略的同源是指两个 URL 的协议/主机名/端口一致。例如，<a href="https://www.taobao.com/pages/...，它的协议是" target="_blank" rel="noopener">https://www.taobao.com/pages/...，它的协议是</a> https，主机名是 <a href="http://www.taobao.com，端口是" target="_blank" rel="noopener">www.taobao.com，端口是</a> 443。</p>
+<p>同源策略作为浏览器的安全基石，其「同源」判断是比较严格的，相对而言，Cookie 中的「同站」判断就比较宽松：只要两个 URL 的 eTLD+1 相同即可，不需要考虑协议和端口。其中，eTLD 表示有效顶级域名，注册于 Mozilla 维护的公共后缀列表（Public Suffix List）中，例如，.com、<code>.co.uk</code>、<code>.github.io</code> 等。eTLD+1 则表示，有效顶级域名+二级域名，例如 taobao.com 等。</p>
+<p>举几个例子，<a href="http://www.taobao.com" target="_blank" rel="noopener">www.taobao.com</a> 和 <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a> 是跨站，<a href="http://www.a.taobao.com" target="_blank" rel="noopener">www.a.taobao.com</a> 和 <a href="http://www.b.taobao.com" target="_blank" rel="noopener">www.b.taobao.com</a> 是同站，a.github.io 和 b.github.io 是跨站(注意是跨站)。</p>
+<h3 id="改变"><a href="#改变" class="headerlink" title="改变"></a>改变</h3><p>接下来看下从 None 改成 Lax 到底影响了哪些地方的 Cookies 的发送？直接来一个图表<br><img src="/2020/08/09/%E5%85%B3%E4%BA%8Ecookie/samesite.jpg" alt="samesite.jpg"><br>从上图可以看出，对大部分 web 应用而言，Post 表单，iframe，AJAX，Image 这四种情况从以前的跨站会发送三方 Cookie，变成了不发送。</p>
+<p>Post 表单：应该的，学 CSRF 总会举表单的例子。</p>
+<p>iframe：iframe 嵌入的 web 应用有很多是跨站的，都会受到影响。</p>
+<p>AJAX：可能会影响部分前端取值的行为和结果。</p>
+<p>Image：图片一般放 CDN，大部分情况不需要 Cookie，故影响有限。但如果引用了需要鉴权的图片，可能会受到影响。</p>
+<p>除了这些还有 script 的方式，这种方式也不会发送 Cookie，像淘宝的大部分请求都是 <code>jsonp</code>，如果涉及到跨站也有可能会被影响。</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>我们再看看会出现什么的问题？举几个例子：</p>
+<ul>
+<li>天猫和飞猪的页面靠请求淘宝域名下的接口获取登录信息，由于 Cookie 丢失，用户无法登录，页面还会误判断成是由于用户开启了浏览器的“禁止第三方 Cookie”功能导致而给与错误的提示</li>
+<li>淘宝部分页面内嵌支付宝确认付款和确认收货页面、天猫内嵌淘宝的登录页面等，由于 Cookie 失效，付款、登录等操作都会失败</li>
+<li>阿里妈妈在各大网站比如今日头条，网易，微博等投放的广告，也是用 iframe 嵌入的，没有了 Cookie，就不能准确的进行推荐</li>
+<li>一些埋点系统会把用户 id 信息埋到 Cookie 中，用于日志上报，这种系统一般走的都是单独的域名，与业务域名分开，所以也会受到影响。</li>
+<li>一些用于防止恶意请求的系统，对判断为恶意请求的访问会弹出验证码让用户进行安全验证，通过安全验证后会在请求所在域种一个 Cookie，请求中带上这个 Cookie 之后，短时间内不再弹安全验证码。在 Chrome80 以上如果因为 Samesite 的原因请求没办法带上这个 Cookie，则会出现一直弹出验证码进行安全验证。</li>
+<li>天猫商家后台请求了跨域的接口，因为没有 Cookie，接口不会返回数据</li>
+</ul>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>解决方案就是设置<code>SameSite</code>为<code>none</code>。</p>
+<p>注意的地方:</p>
+<ul>
+<li><p>HTTP 接口不支持 SameSite=none<br>如果你想加 SameSite=none 属性，那么该 Cookie 就必须同时加上 Secure 属性，表示只有在 HTTPS 协议下该 Cookie 才会被发送。</p>
+</li>
+<li><p>需要 UA 检测，部分浏览器不能加 SameSite=none<br>IOS 12 的 Safari 以及老版本的一些 Chrome 会把 SameSite=none 识别成 SameSite=Strict，所以服务端必须在下发 Set-Cookie 响应头时进行 User-Agent 检测，对这些浏览器不下发 SameSite=none 属性</p>
+</li>
+</ul>
+<h2 id="cookie-的作用"><a href="#cookie-的作用" class="headerlink" title="cookie 的作用"></a>cookie 的作用</h2><p>Cookie 主要用于以下三个方面：</p>
+<ul>
+<li>会话状态管理（如用户登录状态、购物车、游戏分数或其它需要记录的信息）</li>
+<li>个性化设置（如用户自定义设置、主题等）</li>
+<li>浏览器行为跟踪（如跟踪分析用户行为等）</li>
+</ul>
+<h2 id="cookie-的缺点"><a href="#cookie-的缺点" class="headerlink" title="cookie 的缺点"></a>cookie 的缺点</h2><p>如果被问到话，可以从大小、安全、增加请求大小等方面回答。</p>
+<h2 id="Cookie-的发送情况-父域名会发送子域名的-cookie"><a href="#Cookie-的发送情况-父域名会发送子域名的-cookie" class="headerlink" title="Cookie 的发送情况 父域名会发送子域名的 cookie?"></a>Cookie 的发送情况 父域名会发送子域名的 cookie?</h2><p>我们要知道子域名可以获取父级域名的 cookie 的，父域名发送请求的话，只会携带父级域名的 cookie，是携带不了子域名的 cookie 的</p>
+<h2 id="如何获取-cookie"><a href="#如何获取-cookie" class="headerlink" title="如何获取 cookie"></a>如何获取 cookie</h2><h3 id="以前操作-cookie"><a href="#以前操作-cookie" class="headerlink" title="以前操作 cookie"></a>以前操作 cookie</h3><p>用 JS 操作 Cookie 其实是很麻烦的，并不存在一个简单的 API 能让我们获取或者设置 Cookie。</p>
+<p>唯一一个操作 Cookie 的 API 是 document.cookie，但是这句代码使用起来很难受。如果说我们想要获取一个需要的 Cookie，可能得先写这么一个 <code>utils</code> 函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getCookie</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> value = <span class="string">`; <span class="subst">$&#123;<span class="built_in">document</span>.cookie&#125;</span>`</span>;</span><br><span class="line">  <span class="keyword">const</span> parts = value.split(<span class="string">`; <span class="subst">$&#123;name&#125;</span>=`</span>);</span><br><span class="line">  <span class="keyword">if</span> (parts.length === <span class="number">2</span>) <span class="keyword">return</span> parts.pop().split(<span class="string">";"</span>).shift();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//设置cookie</span></span><br><span class="line"><span class="keyword">const</span> setCookie = <span class="function">(<span class="params">cookieKey, cookieValue, expirationDays</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> expiryDate = <span class="string">''</span>;</span><br><span class="line">  <span class="keyword">if</span> (expirationDays) &#123;</span><br><span class="line">    <span class="keyword">const</span> date = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    date.setTime(<span class="string">`<span class="subst">$&#123;date.getTime()&#125;</span><span class="subst">$&#123;(expirationDays || <span class="number">30</span> * <span class="number">24</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">1000</span>)&#125;</span>`</span>);</span><br><span class="line">    expiryDate = <span class="string">`; expiryDate=" <span class="subst">$&#123;date.toUTCString()&#125;</span>`</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">document</span>.cookie = <span class="string">`<span class="subst">$&#123;cookieKey&#125;</span>=<span class="subst">$&#123;cookieValue || <span class="string">''</span>&#125;</span><span class="subst">$&#123;expiryDate&#125;</span>; path=/`</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是在 Chrome 87 版本中我们无需再引入这样的代码了，取而代之的是新的 API：<code>cookieStore</code>。这是一个异步的 API，可以很方便地获取设置以及监听 <code>Cookie</code> 的改变。</p>
+<h3 id="通过-cookie-Store-获取-cookie"><a href="#通过-cookie-Store-获取-cookie" class="headerlink" title="通过 cookie.Store 获取 cookie"></a>通过 cookie.Store 获取 cookie</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cookieStore.set(<span class="string">'lin'</span>,<span class="number">1</span>)<span class="comment">//undefined</span></span><br><span class="line">cookieStore.get(<span class="string">'lin'</span>)<span class="comment">//&#123;domain:null,expires:null,name:'lin',path:"/",sameSite:"strict",...&#125;</span></span><br><span class="line"></span><br><span class="line">cookieStore.getAll(&#123;<span class="attr">domain</span>:<span class="string">'juejin.im'</span>&#125;)</span><br><span class="line">cookieStore.delete(<span class="string">'lin'</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://zhuanlan.zhihu.com/p/114093227" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/114093227</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cookie/" rel="tag"><i class="fa fa-tag"></i> cookie</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/19/iframe%E4%B8%AD%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/" rel="next" title="iframe中的跨域问题">
+                <i class="fa fa-chevron-left"></i> iframe中的跨域问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/27/vue%E7%9A%84%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A%E5%AE%9E%E7%8E%B0/" rel="prev" title="vue的双向绑定实现">
+                vue的双向绑定实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/iu.jpg"
+                alt="yinjiangQAQ" />
+            
+              <p class="site-author-name" itemprop="name">yinjiangQAQ</p>
+              <p class="site-description motion-element" itemprop="description">to rise abruptly based on its accumulated strength</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yinjiangqaq" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/yinjiangQAQ" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+<div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=0&id=4875667277&auto=1&height=32"></iframe>
+</div>
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-book"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xz.aliyun.com/t/1121" title="Web日志安全分析浅谈" target="_blank">Web日志安全分析浅谈</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/zgcr654321/article/details/86751765" title="hexo主题个性化设置" target="_blank">hexo主题个性化设置</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP"><span class="nav-number">2.</span> <span class="nav-text">HTTP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie"><span class="nav-number">3.</span> <span class="nav-text">Cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie-的设置"><span class="nav-number">4.</span> <span class="nav-text">Cookie 的设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie-的属性"><span class="nav-number">5.</span> <span class="nav-text">Cookie 的属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Name-Value"><span class="nav-number">5.1.</span> <span class="nav-text">Name&#x2F;Value</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Expires"><span class="nav-number">5.2.</span> <span class="nav-text">Expires</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Max-Age"><span class="nav-number">5.3.</span> <span class="nav-text">Max-Age</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Domain"><span class="nav-number">6.</span> <span class="nav-text">Domain</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Path"><span class="nav-number">6.1.</span> <span class="nav-text">Path</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Secure-属性"><span class="nav-number">6.2.</span> <span class="nav-text">Secure 属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPOnly"><span class="nav-number">6.3.</span> <span class="nav-text">HTTPOnly</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SameSite"><span class="nav-number">6.4.</span> <span class="nav-text">SameSite</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨域和跨站"><span class="nav-number">6.5.</span> <span class="nav-text">跨域和跨站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改变"><span class="nav-number">6.6.</span> <span class="nav-text">改变</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">6.7.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决办法"><span class="nav-number">6.8.</span> <span class="nav-text">解决办法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie-的作用"><span class="nav-number">7.</span> <span class="nav-text">cookie 的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie-的缺点"><span class="nav-number">8.</span> <span class="nav-text">cookie 的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie-的发送情况-父域名会发送子域名的-cookie"><span class="nav-number">9.</span> <span class="nav-text">Cookie 的发送情况 父域名会发送子域名的 cookie?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何获取-cookie"><span class="nav-number">10.</span> <span class="nav-text">如何获取 cookie</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#以前操作-cookie"><span class="nav-number">10.1.</span> <span class="nav-text">以前操作 cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过-cookie-Store-获取-cookie"><span class="nav-number">10.2.</span> <span class="nav-text">通过 cookie.Store 获取 cookie</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021-06-23</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yinjiangQAQ</span>
+
+  
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访客量
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.4"></script>
+
+
+  
+
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaScript," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言上一篇博客我们讲到关于JavaScript中this的解析，里面涉及到关于JavaScript中prototype的内容，讲的内容比较限定于this，对此专门做一篇完整一点的，只关于prototype的博文而与其相关的还有刷到一道前端笔试题跟其有关的 关于prototype所有的 JavaScript 对象都会从一个prototype（原型对象）中继承属性和方法：  Date 对象从 Date">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript中prototype解析">
+<meta property="og:url" content="http://yoursite.com/2020/01/19/JavaScript%E4%B8%ADprototype%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="前言上一篇博客我们讲到关于JavaScript中this的解析，里面涉及到关于JavaScript中prototype的内容，讲的内容比较限定于this，对此专门做一篇完整一点的，只关于prototype的博文而与其相关的还有刷到一道前端笔试题跟其有关的 关于prototype所有的 JavaScript 对象都会从一个prototype（原型对象）中继承属性和方法：  Date 对象从 Date">
+<meta property="og:image" content="http://yoursite.com/2020/01/19/JavaScript%E4%B8%ADprototype%E8%A7%A3%E6%9E%90/prototype.PNG">
+<meta property="article:published_time" content="2020-01-19T04:19:16.000Z">
+<meta property="article:modified_time" content="2020-01-19T06:50:12.000Z">
+<meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/01/19/JavaScript%E4%B8%ADprototype%E8%A7%A3%E6%9E%90/prototype.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/19/JavaScript中prototype解析/"/>
+
+
+
+
+
+  <title>JavaScript中prototype解析 | yinjiangQAQ Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yinjiangQAQ Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/19/JavaScript%E4%B8%ADprototype%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">JavaScript中prototype解析</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-19T12:19:16+08:00">
+                2020-01-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.3k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇博客我们讲到关于JavaScript中<code>this</code>的解析，里面涉及到关于JavaScript中<code>prototype</code>的内容，讲的内容比较限定于<code>this</code>，对此专门做一篇完整一点的，只关于<code>prototype</code>的博文<br>而与其相关的还有刷到一道前端笔试题跟其有关的<br><img src="/2020/01/19/JavaScript%E4%B8%ADprototype%E8%A7%A3%E6%9E%90/prototype.PNG" alt="prototype.PNG"></p>
+<h2 id="关于prototype"><a href="#关于prototype" class="headerlink" title="关于prototype"></a>关于prototype</h2><p>所有的 JavaScript 对象都会从一个<code>prototype</code>（原型对象）中继承属性和方法：</p>
+<ul>
+<li>Date 对象从 Date.prototype 继承。</li>
+<li>Array 对象从 Array.prototype 继承。</li>
+<li>Person 对象从 Person.prototype 继承。  </li>
+<li><em>所有 JavaScript 中的对象都是位于原型链顶端的 <code>Object</code> 的实例。*</em>换句话说，prototype原型链最终指向的是<code>object.prototype</code>,而  <code>object.prototype</code>对象的原型其实是一个没有任何属性和方法的<code>null对象</code><br>JavaScript 对象有一个指向一个原型对象的链。当试图访问一个对象的属性时，它不仅仅在该对象上搜寻，还会搜寻该对象的原型，以及该对象的原型的原型，依次层层向上搜索，直到找到一个名字匹配的属性或到达原型链的末尾。(有点像继承，跟上一篇博文我说的，有点类似JavaScript面向对象的继承)，因此<code>Date</code> 对象, <code>Array</code> 对象, 以及 <code>Person</code> 对象从 <code>Object.prototype</code> 继承。<br>而这道题目中<code>function.prototype</code>的最终指向，而JavaScript中函数其实也是个对象，所以函数对象的<code>prototype</code>最终指向的还是<code>Object</code><h2 id="prototype属性的作用"><a href="#prototype属性的作用" class="headerlink" title="prototype属性的作用"></a>prototype属性的作用</h2><h3 id="构造函数的介绍"><a href="#构造函数的介绍" class="headerlink" title="构造函数的介绍"></a>构造函数的介绍</h3>要讲prototype属性的作用之前还是得先讲一下构造函数。<br>所谓构造函数，就是提供了一个生成对象的模板并描述对象的基本结构的函数。一个构造函数，可以生成多个对象，每个对象都有相同的结构。总的来说，构造函数就是对象的模板，对象就是构造函数的实例。<br>构造函数的特点有：</li>
+<li>构造函数的函数名首字母必须大写。</li>
+<li>内部使用this对象，来指向将要生成的对象实例。</li>
+<li>使用new操作符来调用构造函数，并返回对象实例。<br>看一个简单的例子：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function Person()&#123;</span><br><span class="line"> this.name &#x3D; &#39;keith&#39;;</span><br><span class="line">&#125;</span><br><span class="line"> var boy &#x3D; new Person();</span><br><span class="line"> &#x2F;&#x2F;new之后，此时的this指向boy</span><br><span class="line">console.log(boy.name); &#x2F;&#x2F;&#39;keith&#39;</span><br></pre></td></tr></table></figure>
+<h3 id="构造函数的缺点"><a href="#构造函数的缺点" class="headerlink" title="构造函数的缺点"></a>构造函数的缺点</h3>所有的实例对象都可以继承构造函数中的属性和方法。但是，同一个对象实例之间，无法共享属性。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function Person(name,height)&#123;</span><br><span class="line"> this.name&#x3D;name;</span><br><span class="line"> this.height&#x3D;height;</span><br><span class="line"> this.hobby&#x3D;function()&#123;</span><br><span class="line"> return &#39;watching movies&#39;;</span><br><span class="line">&#125;</span><br><span class="line"> &#125;</span><br><span class="line">var boy&#x3D;new Person(&#39;keith&#39;,180);</span><br><span class="line"> var girl&#x3D;new Person(&#39;rascal&#39;,153);</span><br><span class="line"> console.log(boy.name); &#x2F;&#x2F;&#39;keith&#39;</span><br><span class="line"> console.log(girl.name); &#x2F;&#x2F;&#39;rascal&#39;</span><br><span class="line"> console.log(boy.hobby&#x3D;&#x3D;&#x3D;girl.hobby); &#x2F;&#x2F;false 按照我们的理解，男孩和女孩的兴趣应该是一样的，但是结果为false</span><br></pre></td></tr></table></figure>
+上面代码中，一个构造函数Person生成了两个对象实例<code>boy</code>和<code>girl</code>，并且有两个属性和一个方法。但是，它们的<code>hobby</code>方法是不一样的。也就是说，每当你使用<code>new</code>来调用构造函数放回一个对象实例的时候，都会new一个<code>hobby</code>方法(两个方法是不一样的)，这既没有必要，又浪费资源，因为所有hobby方法都是同样的行为，完全可以被<strong>两个对象实例共享。</strong>这时候就需要<code>prototype</code>来提供帮助。<h3 id="prototype属性的作用-1"><a href="#prototype属性的作用-1" class="headerlink" title="prototype属性的作用"></a>prototype属性的作用</h3>为了解决构造函数的对象实例之间无法共享属性的缺点，js提供了prototype属性。上面的例子改一下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function Person(name,height)&#123;</span><br><span class="line">this.name&#x3D;name;</span><br><span class="line">this.height&#x3D;height;</span><br><span class="line">&#125;</span><br><span class="line">Person.prototype.hobby&#x3D;function()&#123;</span><br><span class="line">return &#39;watching movies&#39;;</span><br><span class="line">&#125;</span><br><span class="line">var boy&#x3D;new Person(&#39;keith&#39;,180);</span><br><span class="line">var girl&#x3D;new Person(&#39;rascal&#39;,153);</span><br><span class="line">console.log(boy.name); &#x2F;&#x2F;&#39;keith&#39;</span><br><span class="line">console.log(girl.name); &#x2F;&#x2F;&#39;rascal&#39;</span><br><span class="line">console.log(boy.hobby&#x3D;&#x3D;&#x3D;girl.hobby); &#x2F;&#x2F;true</span><br></pre></td></tr></table></figure>
+这里把<code>hobby</code>方法放在<code>Person</code>的原型对象的属性里面了，这样你无论<code>new</code>多少个<code>person</code>实例，他们的<code>hobby</code>方法都是继承Person原型的那个<code>hobby</code>方法，都是一样的。<br>但是要记住<strong>原型对象的属性不是对象实例的属性。</strong>对象实例的属性是继承自构造函数定义的属性，因为构造函数内部有一个<code>this</code>关键字来指向将要生成的对象实例。<br>因此当修改了原型对象的hobby方法之后，两个对象实例都发生了变化。这是因为对象实例其实是没有hobby方法，都是读取person原型对象的hobby方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">boy.hobby&#x3D;function()&#123;</span><br><span class="line"> return &#39;play basketball&#39;;</span><br><span class="line"> &#125;</span><br><span class="line"> console.log(boy.hobby()); &#x2F;&#x2F;&#39;play basketball&#39;</span><br><span class="line"> console.log(girl.hobby()); &#x2F;&#x2F;&#39;watching movies&#39;</span><br></pre></td></tr></table></figure>
+上面代码中，<strong><code>boy</code>对象实例的hobby方法修改时，就不会在继承原型对象上的hobby方法了</strong>。不过girl仍然会继承原型对象的方法。也就是说当你重写跟原型对象一样(或者便于理解，说成父类)的相同属性或者方法时，就一定按子类重写的那个属性或方法为主，如果没有重写，就继承父类的。<h2 id="原型链-prototype-chains"><a href="#原型链-prototype-chains" class="headerlink" title="原型链(prototype chains)"></a>原型链(prototype chains)</h2>对象的属性和方法，有可能是定义在自身，也有可能是定义在它的原型对象。由于原型对象本身对于对象实例来说也是对象，它也有自己的原型，所以形成了一条原型链（prototype chain）。比如，a对象是b对象的原型，b对象是c对象的原型，以此类推。所有一切的对象的原型顶端，都是<code>Object.prototype</code>，即Object构造函数的<code>prototype</code>属性指向的那个对象。<br>当然，<code>Object.prototype对象</code>也有自己的原型对象，那就是没有任何属性和方法的<code>null对象</code>，而<code>null对象</code>没有自己的原型。<br>原型链的特点有：</li>
+<li>读取对象的某个属性时，JavaScript引擎先寻找对象本身的属性，如果找不到，就到它的原型去找，如果还是找不到，就到原型的原型去找。如果直到最顶层的<code>Object.prototype</code>还是找不到，则返回<code>undefined</code>。</li>
+<li>如果对象自身和它的原型，都定义了一个同名属性，那么优先读取对象自身的属性，这叫做“覆盖”<code>（overiding）</code>。</li>
+<li>一级级向上在原型链寻找某个属性，对性能是有影响的。所寻找的属性在越上层的原型对象，对性能的影响越大。如果寻找某个不存在的属性，将会遍历整个原型链</li>
+</ul>
+<h2 id="顺便补充讲一下proto"><a href="#顺便补充讲一下proto" class="headerlink" title="顺便补充讲一下proto"></a>顺便补充讲一下<em>proto</em></h2><p><code>_proto_</code>属性，<strong>用来读取或设置当前对象的<code>prototype对象</code>。</strong>目前，所有浏览器（包括 IE11）都部署了这个属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; es5 的写法</span><br><span class="line">const obj &#x3D; &#123;</span><br><span class="line">  method: function() &#123; ... &#125;</span><br><span class="line">&#125;;</span><br><span class="line">obj.__proto__ &#x3D; someOtherObj;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; es6 的写法</span><br><span class="line">var obj &#x3D; Object.create(someOtherObj);</span><br><span class="line">obj.method &#x3D; function() &#123; ... &#125;;</span><br></pre></td></tr></table></figure>
+<p>然鹅ES6并没有把它写进去，而是使用下面的<code>Object.setPrototypeOf()</code>（写操作）、<code>Object.getPrototypeOf()</code>（读操作）、<code>Object.create()</code>（生成操作）代替这个<code>_proto_</code>属性。</p>
+<h4 id="Object-setPrototypeOf"><a href="#Object-setPrototypeOf" class="headerlink" title="Object.setPrototypeOf()"></a>Object.setPrototypeOf()</h4><p>也就是<code>Object.setPrototypeOf</code>方法的作用与<code>__proto__</code>相同，用来设置一个对象的<code>prototype对象</code>，返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 格式</span><br><span class="line">Object.setPrototypeOf(object, prototype)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 用法</span><br><span class="line">const o &#x3D; Object.setPrototypeOf(&#123;&#125;, null);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;等价于用_proto_属性</span><br><span class="line">function (obj, proto) &#123;</span><br><span class="line">  obj.__proto__ &#x3D; proto;</span><br><span class="line">  return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看一个例子更好的理解<code>Object.setPrototypeOf</code>的用法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">let proto &#x3D; &#123;&#125;;</span><br><span class="line">let obj &#x3D; &#123; x: 10 &#125;;</span><br><span class="line">Object.setPrototypeOf(obj, proto);</span><br><span class="line">&#x2F;&#x2F;设置obj的原型时proto</span><br><span class="line">proto.y &#x3D; 20;</span><br><span class="line">proto.z &#x3D; 40;</span><br><span class="line">&#x2F;&#x2F;给proto新增属性，同时obj也会继承</span><br><span class="line">obj.x &#x2F;&#x2F; 10</span><br><span class="line">obj.y &#x2F;&#x2F; 20</span><br><span class="line">obj.z &#x2F;&#x2F; 40</span><br></pre></td></tr></table></figure>
+<p>如果第一个参数不是对象，会自动转为对象。但是<strong>由于返回的还是第一个参数，</strong>所以这个操作不会产生任何效果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Object.setPrototypeOf(1, &#123;&#125;) &#x3D;&#x3D;&#x3D; 1 &#x2F;&#x2F; true</span><br><span class="line">Object.setPrototypeOf(&#39;foo&#39;, &#123;&#125;) &#x3D;&#x3D;&#x3D; &#39;foo&#39; &#x2F;&#x2F; true</span><br><span class="line">Object.setPrototypeOf(true, &#123;&#125;) &#x3D;&#x3D;&#x3D; true &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+<p>由于<code>undefined</code>和<code>null</code>无法转为对象，所以如果第一个参数是<code>undefined</code>或<code>null</code>，就会报错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Object.setPrototypeOf(undefined, &#123;&#125;)</span><br><span class="line">&#x2F;&#x2F; TypeError: Object.setPrototypeOf called on null or undefined</span><br><span class="line"></span><br><span class="line">Object.setPrototypeOf(null, &#123;&#125;)</span><br><span class="line">&#x2F;&#x2F; TypeError: Object.setPrototypeOf called on null or undefined</span><br></pre></td></tr></table></figure>
+<h4 id="Object-getPrototypeOf"><a href="#Object-getPrototypeOf" class="headerlink" title="Object.getPrototypeOf()"></a>Object.getPrototypeOf()</h4><p>该方法与<code>Object.setPrototypeOf</code>方法配套，用于读取一个对象的原型对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function Rectangle() &#123;</span><br><span class="line">  &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const rec &#x3D; new Rectangle();</span><br><span class="line"></span><br><span class="line">Object.getPrototypeOf(rec) &#x3D;&#x3D;&#x3D; Rectangle.prototype</span><br><span class="line">&#x2F;&#x2F; true</span><br><span class="line"></span><br><span class="line">Object.setPrototypeOf(rec, Object.prototype);</span><br><span class="line">Object.getPrototypeOf(rec) &#x3D;&#x3D;&#x3D; Rectangle.prototype</span><br><span class="line">&#x2F;&#x2F; false</span><br></pre></td></tr></table></figure>
+<p>如果参数不是对象，会被自动转为对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 等同于 Object.getPrototypeOf(Number(1))</span><br><span class="line">Object.getPrototypeOf(1)</span><br><span class="line">&#x2F;&#x2F; Number &#123;[[PrimitiveValue]]: 0&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 等同于 Object.getPrototypeOf(String(&#39;foo&#39;))</span><br><span class="line">Object.getPrototypeOf(&#39;foo&#39;)</span><br><span class="line">&#x2F;&#x2F; String &#123;length: 0, [[PrimitiveValue]]: &quot;&quot;&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 等同于 Object.getPrototypeOf(Boolean(true))</span><br><span class="line">Object.getPrototypeOf(true)</span><br><span class="line">&#x2F;&#x2F; Boolean &#123;[[PrimitiveValue]]: false&#125;</span><br><span class="line"></span><br><span class="line">Object.getPrototypeOf(1) &#x3D;&#x3D;&#x3D; Number.prototype &#x2F;&#x2F; true</span><br><span class="line">Object.getPrototypeOf(&#39;foo&#39;) &#x3D;&#x3D;&#x3D; String.prototype &#x2F;&#x2F; true</span><br><span class="line">Object.getPrototypeOf(true) &#x3D;&#x3D;&#x3D; Boolean.prototype &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+<p>如果参数是<code>undefined</code>或<code>null</code>，它们无法转为对象，所以会报错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Object.getPrototypeOf(null)</span><br><span class="line">&#x2F;&#x2F; TypeError: Cannot convert undefined or null to object</span><br><span class="line"></span><br><span class="line">Object.getPrototypeOf(undefined)</span><br><span class="line">&#x2F;&#x2F; TypeError: Cannot convert undefined or null to object</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>参考阅读：<a href="https://www.cnblogs.com/douyage/p/8630529.html" target="_blank" rel="noopener">https://www.cnblogs.com/douyage/p/8630529.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"><i class="fa fa-tag"></i> JavaScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/17/JavaScriptthis%E8%A7%A3%E6%9E%90/" rel="next" title="JavaScript this解析">
+                <i class="fa fa-chevron-left"></i> JavaScript this解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/19/%E5%85%B3%E4%BA%8Ecanvas%E5%85%83%E7%B4%A0%E5%92%8CCSS%E4%B8%AD%E7%9A%84flex%E5%B1%9E%E6%80%A7/" rel="prev" title="关于canvas元素和CSS中的flex属性">
+                关于canvas元素和CSS中的flex属性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/iu.jpg"
+                alt="yinjiangQAQ" />
+            
+              <p class="site-author-name" itemprop="name">yinjiangQAQ</p>
+              <p class="site-description motion-element" itemprop="description">to rise abruptly based on its accumulated strength</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yinjiangqaq" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/yinjiangQAQ" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+<div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=0&id=4875667277&auto=1&height=32"></iframe>
+</div>
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-book"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xz.aliyun.com/t/1121" title="Web日志安全分析浅谈" target="_blank">Web日志安全分析浅谈</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/zgcr654321/article/details/86751765" title="hexo主题个性化设置" target="_blank">hexo主题个性化设置</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于prototype"><span class="nav-number">2.</span> <span class="nav-text">关于prototype</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#prototype属性的作用"><span class="nav-number">3.</span> <span class="nav-text">prototype属性的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数的介绍"><span class="nav-number">3.1.</span> <span class="nav-text">构造函数的介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数的缺点"><span class="nav-number">3.2.</span> <span class="nav-text">构造函数的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prototype属性的作用-1"><span class="nav-number">3.3.</span> <span class="nav-text">prototype属性的作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原型链-prototype-chains"><span class="nav-number">4.</span> <span class="nav-text">原型链(prototype chains)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#顺便补充讲一下proto"><span class="nav-number">5.</span> <span class="nav-text">顺便补充讲一下proto</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-setPrototypeOf"><span class="nav-number">5.0.1.</span> <span class="nav-text">Object.setPrototypeOf()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-getPrototypeOf"><span class="nav-number">5.0.2.</span> <span class="nav-text">Object.getPrototypeOf()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021-06-23</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yinjiangQAQ</span>
+
+  
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访客量
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.4"></script>
+
+
+  
+
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

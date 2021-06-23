@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="前端组件化," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="背景现在中台概念算是比较明确的，为了适应不同团队的快速开发，需要提供业务组件给不同的上层业务方使用，但因为一些历史遗留问题，不同业务线使用的框架不统一，包括 jQuery、React 、Vue。为了满足不同业务方的需求，往往需要根据业务方使用的框架，开发对应框架的组件。 这样做不科学，因为每个团队用的技术栈，框架不尽相同，所以维护起来，组件升级都相对比较费劲。 理想中的组件 跨框架(只需要一套代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何开发跨框架组件">
+<meta property="og:url" content="http://yoursite.com/2020/10/20/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E8%B7%A8%E6%A1%86%E6%9E%B6%E7%BB%84%E4%BB%B6/index.html">
+<meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="背景现在中台概念算是比较明确的，为了适应不同团队的快速开发，需要提供业务组件给不同的上层业务方使用，但因为一些历史遗留问题，不同业务线使用的框架不统一，包括 jQuery、React 、Vue。为了满足不同业务方的需求，往往需要根据业务方使用的框架，开发对应框架的组件。 这样做不科学，因为每个团队用的技术栈，框架不尽相同，所以维护起来，组件升级都相对比较费劲。 理想中的组件 跨框架(只需要一套代码">
+<meta property="og:image" content="http://yoursite.com/2020/10/20/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E8%B7%A8%E6%A1%86%E6%9E%B6%E7%BB%84%E4%BB%B6/todo.png">
+<meta property="article:published_time" content="2020-10-20T02:20:57.000Z">
+<meta property="article:modified_time" content="2020-10-20T05:47:18.000Z">
+<meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="前端组件化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/10/20/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E8%B7%A8%E6%A1%86%E6%9E%B6%E7%BB%84%E4%BB%B6/todo.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/10/20/如何开发跨框架组件/"/>
+
+
+
+
+
+  <title>如何开发跨框架组件 | yinjiangQAQ Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yinjiangQAQ Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/20/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E8%B7%A8%E6%A1%86%E6%9E%B6%E7%BB%84%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">如何开发跨框架组件</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-20T10:20:57+08:00">
+                2020-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E7%BB%84%E4%BB%B6%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">前端组件化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.8k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>现在中台概念算是比较明确的，为了适应不同团队的快速开发，需要提供业务组件给不同的上层业务方使用，但因为一些历史遗留问题，不同业务线使用的框架不统一，包括 jQuery、React 、Vue。为了满足不同业务方的需求，往往需要根据业务方使用的框架，开发对应框架的组件。</p>
+<p>这样做不科学，因为每个团队用的技术栈，框架不尽相同，所以维护起来，组件升级都相对比较费劲。</p>
+<h3 id="理想中的组件"><a href="#理想中的组件" class="headerlink" title="理想中的组件"></a>理想中的组件</h3><ul>
+<li>跨框架(只需要一套代码适应不同的框架)</li>
+<li>少升级：组件升级，业务方少升级不升级(注意：组件升级后业务线回归还是必要的)</li>
+</ul>
+<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><ol>
+<li><strong>原生 js 实现</strong></li>
+</ol>
+<p><font color="#0000FF">优点：</font></p>
+<ul>
+<li>跨框架：不依赖于框架实现</li>
+<li>轻量：可以不依赖其他 UI 组件，体积小</li>
+</ul>
+<p><font color="#0000FF">缺点：</font></p>
+<ul>
+<li><p>投入产出比低：实现一套常用工具方法和 UI 组件，投入时间长</p>
+</li>
+<li><p>踩坑：兼容性问题的坑要走一遍，风险大</p>
+</li>
+<li><p>很难满足复杂业务场景的需求</p>
+</li>
+</ul>
+<p><font color="#0000FF">适用场景</font></p>
+<p>不需要复杂交互的场景，如前台吊顶、后台菜单侧边栏可采用这种方式。</p>
+<p>但在实际的业务场景中，业务组件中有比较多复杂的交互场景， 上面的方案不太能满足要求，所以我们在上面的方案之上进行迭代：</p>
+<ol start="2">
+<li><strong>原生容器组件+iframe 加载业务逻辑组件</strong></li>
+</ol>
+<p>我们把业务组件分成两个部分：</p>
+<ul>
+<li><p>容器组件</p>
+<p>用原生 JS 实现中间层容器组件，解决跨框架的加载问题，容器组件主要负责：</p>
+<ol>
+<li><p>收集组件需要的参数</p>
+</li>
+<li><p>注册全局回调</p>
+</li>
+<li><p>组件挂载</p>
+</li>
+<li><p>加载 iframe</p>
+</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>业务逻辑组件<br>根据 iframe 天然的沙箱特性，业务逻辑用 iframe 页面加载，就保证了业务组件的实现不受框架的限制，可以完美解决问题。业务逻辑组件主要负责：</li>
+</ul>
+<ol>
+<li><p>与容器组件通信</p>
+</li>
+<li><p>运行环境隔离，可以使用任意框架实现业务逻辑</p>
+</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><p>动态加载静态资源，iframe 加载略慢，实际体验在接受范围内</p>
+</li>
+<li><p>跨域通信问题</p>
+</li>
+</ol>
+<p>此方案容器组件作为中间层，封装不变的逻辑，将多变的业务逻辑隔离出来，从而保证协作方尽量少升级或不升级。业务定制性可根据接口配置，返回不同的 iframe 地址，加载不同的业务逻辑组件，一次开发任意使用。</p>
+<p>实现逻辑图：<br><img src="/2020/10/20/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E8%B7%A8%E6%A1%86%E6%9E%B6%E7%BB%84%E4%BB%B6/todo.png" alt="todo.png"></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="容器组件"><a href="#容器组件" class="headerlink" title="容器组件"></a>容器组件</h3><ul>
+<li>初始化</li>
+</ul>
+<p>设置 <code>document.domain</code>，让外部组件和 iframe 可以通信</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取主域名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getTopLevelDomain</span>(<span class="params">host</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> data = host || <span class="built_in">window</span>.location.host;</span><br><span class="line">  <span class="keyword">return</span> data.split(<span class="string">"."</span>).slice(<span class="number">-2</span>).join(<span class="string">"."</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 设置主域名为外层的顶级域A.com</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setDomainToTopLevelDomain</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="built_in">window</span>.document.domain = getTopLevelDomain();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="built_in">console</span>.error(<span class="string">"设置domain失败"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>render：</li>
+</ul>
+<p>生成外部容器 div，设置 loading 图，挂载组件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vanilla</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 获取配置信息</span></span><br><span class="line">  <span class="keyword">constructor</span>(config) &#123;</span><br><span class="line">    <span class="keyword">const</span> options = &#123; ...defaultConfig, ...config &#125;;</span><br><span class="line">    <span class="keyword">this</span>.options = options;</span><br><span class="line">    <span class="keyword">this</span>.elCls = options.elCls;</span><br><span class="line">  &#125;</span><br><span class="line"> <span class="comment">// 生成容器 div</span></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</span><br><span class="line">    <span class="keyword">this</span>.el = div;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> &#123; width, height &#125; = <span class="keyword">this</span>.options;</span><br><span class="line">    div.className = <span class="string">`<span class="subst">$&#123;prefixCls&#125;</span>-wrap <span class="subst">$&#123;prefixCls&#125;</span>-wrap-loading <span class="subst">$&#123;<span class="keyword">this</span>.elCls || <span class="string">''</span>&#125;</span>`</span>;</span><br><span class="line">    <span class="keyword">const</span> maskNode = getMaskNode(prefixCls);</span><br><span class="line">    <span class="keyword">const</span> iframeNode = getIframeNode(prefixCls, width, height);</span><br><span class="line">    div.innerHTML = maskNode + iframeNode;</span><br><span class="line">    <span class="built_in">document</span>.body.appendChild(div);</span><br><span class="line">    <span class="keyword">this</span>.fn();</span><br><span class="line">  &#125;</span><br><span class="line">  init() &#123;</span><br><span class="line">    <span class="comment">// 设置主域名</span></span><br><span class="line">    setDomainToTopLevelDomain();</span><br><span class="line">    <span class="comment">// 初始化 div</span></span><br><span class="line">    <span class="keyword">this</span>.render();</span><br><span class="line">    <span class="comment">// 初始化全局回调函数</span></span><br><span class="line">    <span class="keyword">this</span>.initCallbacks();</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注册回调函数</li>
+</ul>
+<p>通过注册全局回调函数，用于业务逻辑组件与容器组件进行通信</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vanilla</span> </span>&#123;</span><br><span class="line"> ...</span><br><span class="line">  initCallbacks() &#123;</span><br><span class="line">    <span class="keyword">const</span> self = <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">const</span> options = <span class="keyword">this</span>.options;</span><br><span class="line">     <span class="comment">// 初始化全局变量</span></span><br><span class="line">    <span class="built_in">window</span>[paramsName] = options;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">window</span>.onSuccess = <span class="function"><span class="keyword">function</span> <span class="title">onSuccess</span>(<span class="params">data, res</span>) </span>&#123;</span><br><span class="line">      options.onSuccess &amp;&amp; options.onSuccess(data, res);</span><br><span class="line">      <span class="comment">// 延迟1500ms删除用来显示成功提示</span></span><br><span class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        self.removeNode();</span><br><span class="line">      &#125;, <span class="number">1500</span>);</span><br><span class="line">      self.resetCallbacks &amp;&amp; self.resetCallbacks();</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">window</span>.onCancel = <span class="function"><span class="keyword">function</span> <span class="title">onCancel</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      options.onCancel &amp;&amp; options.onCancel();</span><br><span class="line">      self.removeNode();</span><br><span class="line">      self.resetCallbacks &amp;&amp; self.resetCallbacks();</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">window</span>.onError = <span class="function"><span class="keyword">function</span> <span class="title">onError</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">      options.onError &amp;&amp; options.onError(data);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>加载 iframe</li>
+</ul>
+<p>通过接口获取 iframe 地址，业务方可以根据配置动态，加载不同的业务组件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> timer = <span class="function"><span class="keyword">function</span> <span class="title">timer</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vanilla</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  $mount() &#123;</span><br><span class="line">   ...</span><br><span class="line">   <span class="keyword">this</span>.fn();</span><br><span class="line">  &#125;</span><br><span class="line">  fn() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">      width,</span><br><span class="line">      height,</span><br><span class="line">      isAutoSize,</span><br><span class="line">    &#125; = <span class="keyword">this</span>.options;</span><br><span class="line">    <span class="keyword">const</span> el = <span class="keyword">this</span>.el;</span><br><span class="line">    <span class="keyword">const</span> url = getContentUrl(<span class="string">'你的iframe地址'</span>);</span><br><span class="line">    <span class="keyword">const</span> iframeWidth = width;</span><br><span class="line">    <span class="keyword">const</span> iframeHeight = height;</span><br><span class="line">    <span class="keyword">const</span> iframeEle = el.querySelector(<span class="string">'.J_CreditIframe'</span>);</span><br><span class="line">    <span class="keyword">const</span> modalNode = el.querySelector(<span class="string">`.<span class="subst">$&#123;prefixCls&#125;</span>`</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!isAutoSize &amp;&amp; (iframeWidth !== width || iframeHeight !== height)) &#123;</span><br><span class="line">      <span class="keyword">this</span>.setNodeSizeAndPostion(modalNode, iframeEle, iframeWidth, iframeHeight);</span><br><span class="line">    &#125;</span><br><span class="line">    iframeEle.setAttribute(<span class="string">'src'</span>, url);</span><br><span class="line">    <span class="comment">// 监听load后，隐藏loading</span></span><br><span class="line">    addEvent(iframeEle, <span class="string">'load'</span>, () =&gt; &#123;</span><br><span class="line">      el.className = <span class="string">`<span class="subst">$&#123;prefixCls&#125;</span>-wrap <span class="subst">$&#123;<span class="keyword">this</span>.elCls || <span class="string">''</span>&#125;</span>`</span>;</span><br><span class="line">      <span class="keyword">const</span> maxTime = <span class="number">3000</span>;</span><br><span class="line">      <span class="keyword">const</span> duration = <span class="number">1000</span>;</span><br><span class="line">      <span class="keyword">let</span> timerCounter = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">let</span> w = defaultConfig.width;</span><br><span class="line">      <span class="keyword">let</span> h = defaultConfig.height;</span><br><span class="line">      <span class="comment">// 自适应宽高</span></span><br><span class="line">      <span class="keyword">if</span> (isAutoSize) &#123;</span><br><span class="line">        timer = setInterval(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          ...</span><br><span class="line">      <span class="comment">//</span></span><br><span class="line">       <span class="keyword">this</span>.setNodeSizeAndPostion(modalNode, iframeEle, scrollWidth, scrollHeight);</span><br><span class="line">          &#125;</span><br><span class="line">          timerCounter += duration;</span><br><span class="line">          <span class="keyword">if</span> (timerCounter &gt;= maxTime) &#123;</span><br><span class="line">            clearInterval(timer);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;, duration);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 设置iframe宽高</span></span><br><span class="line">  setNodeSizeAndPostion(container, iframe, width, height) &#123;</span><br><span class="line">    container.style.cssText = <span class="string">`width: <span class="subst">$&#123;width&#125;</span>px; height: <span class="subst">$&#123;height&#125;</span>px;margin-left: -<span class="subst">$&#123;width <span class="regexp">/ 2&#125;px;margin-top: -$&#123;height /</span> <span class="number">2</span>&#125;</span>px;`</span>;</span><br><span class="line">    iframe.style.cssText = <span class="string">`width: <span class="subst">$&#123;width&#125;</span>px; height: <span class="subst">$&#123;height&#125;</span>px;`</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 删除DOM</span></span><br><span class="line">  removeNode() &#123;</span><br><span class="line">    timer &amp;&amp; clearInterval(timer);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.el) &#123;</span><br><span class="line">      <span class="built_in">document</span>.body.removeChild(<span class="keyword">this</span>.el);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="容器组件和业务逻辑组件之间如何通信"><a href="#容器组件和业务逻辑组件之间如何通信" class="headerlink" title="容器组件和业务逻辑组件之间如何通信"></a>容器组件和业务逻辑组件之间如何通信</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取父页面属性</span></span><br><span class="line"><span class="keyword">const</span> params = <span class="built_in">window</span>.parent.paramsName;</span><br><span class="line"><span class="comment">// 调用父页面方法</span></span><br><span class="line"><span class="built_in">window</span>.parent.onSuccess &amp;&amp; <span class="built_in">window</span>.parent.onSuccess(data);</span><br></pre></td></tr></table></figure>
+
+<p>但在实际的业务场景中，我们可能会面临的问题是业务方的域名与 iframe 加载的组件地址域名不一致，这个时候我们就必须要解决组件的跨域通信问题了.</p>
+<h2 id="跨域通信问题"><a href="#跨域通信问题" class="headerlink" title="跨域通信问题"></a>跨域通信问题</h2><h3 id="postMessage"><a href="#postMessage" class="headerlink" title="postMessage"></a>postMessage</h3><p>postMessage (<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage</a>) 可以跨文档通信， 在 IE10 的支持性有问题，在 IE11 及以上可以完美解决跨域问题。笔者需要支持 IE9+，所以没有采用 postMessage</p>
+<h3 id="document-domain"><a href="#document-domain" class="headerlink" title="document.domain"></a>document.domain</h3><p>document.domain + iframe : 设置 document.domain 为主域名，业务方与 iframe 主域名相同，实现父子同域通信。这种实现的前提是两个域的主域名必须一致</p>
+<h3 id="Nginx-代理"><a href="#Nginx-代理" class="headerlink" title="Nginx 代理"></a>Nginx 代理</h3><p>Nginx 配置：<strong>iframe 页面的路径配置为通用路径</strong>，反向代理依赖接口，实现全域名可访问。将业务逻辑组件整合到一个或多个项目中使用，组件打包和发布逻辑可单独定制，适合大量跨框架组件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 静态页面地址</span><br><span class="line">location ~ ^&#x2F;your-project&#x2F; &#123;</span><br><span class="line">  root &#x2F;opt&#x2F;front&#x2F;your-project&#x2F;;</span><br><span class="line">  try_files $uri $uri&#x2F; &#x2F;index.html &#x3D; 404;</span><br><span class="line">  access_log off;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 反向代理</span><br><span class="line">location ~ ^&#x2F;api&#x2F;service&#x2F;(.*)$ &#123;</span><br><span class="line">   proxy_pass http:&#x2F;&#x2F;your-ip;</span><br><span class="line">   proxy_set_header        X-Real-IP $remote_addr;</span><br><span class="line">   proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">   proxy_set_header        Host $http_host;</span><br><span class="line">   proxy_set_header        requestId $request_id;</span><br><span class="line">   proxy_http_version      1.1;</span><br><span class="line">   proxy_set_header        Connection &quot;&quot;;</span><br><span class="line">   expires 30d;</span><br><span class="line">   access_log off;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h2><p>注意处理非白色背景的圆角部分，容易出现毛边。处理方法是 iframe 容器不设置背景色，由 iframe 里面设置圆角 (<code>iframe.border=&quot;no&quot;</code>)</p>
+<p>版本控制：小版本保证向前兼容，大版本可通过动态获取 iframe 地址来实现版本控制</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://mp.weixin.qq.com/s?__biz=MzI0NTE5NzYyMw==&mid=2247484469&idx=1&sn=abac7849a0af0b111769b3f8409bf766&chksm=e9537a6dde24f37b381103c7b15fff7a5f891b7a27fd9f2e31b724e338f258719913aac8ce00&mpshare=1&scene=1&srcid=1020KBeuLhn0RJL8d3QZ78TL&sharer_sharetime=1603160097915&sharer_shareid=f0905f0408effed4fda33087fe9c2205&key=0e6b2ba44e52e4c4ea60974425dec80f0a2fc392b2c8aa37786994eb3ff2d2aafae6c2f92851d839211035c120f7bd722a6ba8e09c40b1bea9a8294f3e36a531faf78a71fe23d77dc87c68d1d2837c94d1db2336c7f2fd7449a7658b3ec517579930cff3a776c0e475bff2bddb9654e6a3e1d6a3d4a97ff39a0bef0539768ab6&ascene=1&uin=MzAzMDM5NTQ4OQ%3D%3D&devicetype=Windows+10+x64&version=6300002f&lang=zh_CN&exportkey=A9kgw8Hp8%2FbOOdBIG4xSMKE%3D&pass_ticket=y1v3BlOnGSb3k2l7X6hvyE53uw5J2PoisBaLtxOU3jm3aLVxeI9lSKAbKCjGVfTV&wx_header=0" target="_blank" rel="noopener">政采云如何实现跨框架组件</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E5%89%8D%E7%AB%AF%E7%BB%84%E4%BB%B6%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 前端组件化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/24/%E4%BB%8E%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86%E5%87%BA%E5%8F%91%E6%8E%A2%E7%A9%B6Flutter%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" rel="next" title="从渲染原理出发探究Flutter内存泄漏">
+                <i class="fa fa-chevron-left"></i> 从渲染原理出发探究Flutter内存泄漏
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/" rel="prev" title="githubAction实践">
+                githubAction实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/iu.jpg"
+                alt="yinjiangQAQ" />
+            
+              <p class="site-author-name" itemprop="name">yinjiangQAQ</p>
+              <p class="site-description motion-element" itemprop="description">to rise abruptly based on its accumulated strength</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yinjiangqaq" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/yinjiangQAQ" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+<div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=0&id=4875667277&auto=1&height=32"></iframe>
+</div>
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-book"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xz.aliyun.com/t/1121" title="Web日志安全分析浅谈" target="_blank">Web日志安全分析浅谈</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/zgcr654321/article/details/86751765" title="hexo主题个性化设置" target="_blank">hexo主题个性化设置</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#理想中的组件"><span class="nav-number">1.1.</span> <span class="nav-text">理想中的组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现方案"><span class="nav-number">2.</span> <span class="nav-text">实现方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">3.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#容器组件"><span class="nav-number">3.1.</span> <span class="nav-text">容器组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器组件和业务逻辑组件之间如何通信"><span class="nav-number">3.2.</span> <span class="nav-text">容器组件和业务逻辑组件之间如何通信</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域通信问题"><span class="nav-number">4.</span> <span class="nav-text">跨域通信问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#postMessage"><span class="nav-number">4.1.</span> <span class="nav-text">postMessage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#document-domain"><span class="nav-number">4.2.</span> <span class="nav-text">document.domain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx-代理"><span class="nav-number">4.3.</span> <span class="nav-text">Nginx 代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需要注意的问题"><span class="nav-number">5.</span> <span class="nav-text">需要注意的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021-06-23</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yinjiangQAQ</span>
+
+  
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访客量
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.4"></script>
+
+
+  
+
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

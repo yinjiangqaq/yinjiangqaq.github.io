@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CI/CD," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Github Action简单介绍首先企业中，用到的大部分是 gitlab 的 CI&#x2F;CD，但是最近 github 也出了自己的 CI&#x2F;CD,全世界开发者花时间最多的应该是 github 了吧。所以比较有学习一下的价值. 我们知道 CI&#x2F;CD 的全称是(Continuous Integretion &#x2F; Continuous Deployment)持续集成&#x2F;持续部署 而持续集成&#x2F;部署是由很多操作组成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="githubAction实践">
+<meta property="og:url" content="http://yoursite.com/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="yinjiangQAQ Blog">
+<meta property="og:description" content="Github Action简单介绍首先企业中，用到的大部分是 gitlab 的 CI&#x2F;CD，但是最近 github 也出了自己的 CI&#x2F;CD,全世界开发者花时间最多的应该是 github 了吧。所以比较有学习一下的价值. 我们知道 CI&#x2F;CD 的全称是(Continuous Integretion &#x2F; Continuous Deployment)持续集成&#x2F;持续部署 而持续集成&#x2F;部署是由很多操作组成">
+<meta property="og:image" content="http://yoursite.com/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/Actions.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/githubPage.png">
+<meta property="article:published_time" content="2021-02-03T16:47:03.000Z">
+<meta property="article:modified_time" content="2021-02-03T16:49:52.000Z">
+<meta property="article:author" content="yinjiangQAQ">
+<meta property="article:tag" content="CI&#x2F;CD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/Actions.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/02/04/githubAction实践/"/>
+
+
+
+
+
+  <title>githubAction实践 | yinjiangQAQ Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yinjiangQAQ Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yinjiangQAQ">
+      <meta itemprop="description" content="to rise abruptly based on its accumulated strength">
+      <meta itemprop="image" content="/images/iu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yinjiangQAQ Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">githubAction实践</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-04T00:47:03+08:00">
+                2021-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.7k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Github-Action"><a href="#Github-Action" class="headerlink" title="Github Action"></a>Github Action</h1><h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><p>首先企业中，用到的大部分是 gitlab 的 CI/CD，但是最近 github 也出了自己的 CI/CD,全世界开发者花时间最多的应该是 github 了吧。所以比较有学习一下的价值.</p>
+<p>我们知道 CI/CD 的全称是(Continuous Integretion / Continuous Deployment)持续集成/持续部署</p>
+<p>而持续集成/部署是由很多操作组成的，如抓取代码、运行测试、登录远程服务器、发布到第三方服务等等，而 github 把这些操作称为 <code>Actions</code></p>
+<p>很多操作在不同项目里面是类似的，完全可以共享。GitHub 注意到了这一点，想出了一个很妙的点子，允许开发者把每个操作写成独立的脚本文件，存放到代码仓库，使得其他开发者可以引用。</p>
+<p>如果你需要某个 action，不必自己写复杂的脚本，直接引用他人写好的 action 即可，整个持续集成过程，就变成了一个 actions 的组合。这就是 <code>GitHub Actions</code> 最特别的地方。</p>
+<p>GitHub 做了一个官方市场，可以搜索到他人提交的 actions。另外，还有一个<code>awesome actions</code> 的仓库，也可以找到不少 action。</p>
+<p>上面说了，每个 <code>action</code> 就是一个独立脚本，因此可以做成代码仓库，使用<code>userName/repoName</code>的语法引用 <code>action</code>。比如，<code>actions/setup-node</code>就表示<code>github.com/actions/setup-node</code>这个仓库，它代表一个 action，作用是安装<code>Node.js</code>。事实上，GitHub 官方的 actions 都放在<code>github.com/actions</code> 里面。</p>
+<p>既然 action 其实是一个代码仓库，那么 action 也就有了具体版本，下面都是合法的 action 引用,用的就是 git 指针的概念。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">actions&#x2F;setup-node@74bc508 # 指向一个 commit</span><br><span class="line">actions&#x2F;setup-node@v1.0    # 指向一个标签</span><br><span class="line">actions&#x2F;setup-node@master  # 指向一个分支</span><br></pre></td></tr></table></figure>
+
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>GitHub Actions 有一些自己的术语。</p>
+<ul>
+<li><p>workflow （工作流程）：持续集成一次运行的过程，就是一个 workflow。</p>
+</li>
+<li><p>job （任务）：一个 workflow 由一个或多个 jobs 构成，含义是一次持续集成的运行，可以完成多个任务。</p>
+</li>
+<li><p>step（步骤）：每个 job 由多个 step 构成，一步步完成。</p>
+</li>
+<li><p>action （动作）：每个 step 可以依次执行一个或多个命令（action）。</p>
+</li>
+</ul>
+<h2 id="workflow-文件"><a href="#workflow-文件" class="headerlink" title="workflow 文件"></a>workflow 文件</h2><p>GitHub Actions 的配置文件叫做 workflow 文件，存放在代码仓库的<code>.github/workflows</code> 目录。具体编辑是在你的代码仓库的 Actions 项。</p>
+<p>workflow 文件采用 <code>YAML</code> 格式，文件名可以任意取，但是后缀名统一为<code>.yml</code>，比如 <code>foo.yml</code>。一个库可以有多个 workflow 文件。GitHub 只要发现<code>.github/workflows</code> 目录里面有.yml 文件，就会自动运行该文件</p>
+<p>下面针对一份 yaml 文件，做具体的一些字段的讲解</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># This is a basic workflow to help you get started with Actions</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">buildAndDeploy</span> <span class="comment">#工作流的名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Controls when the action will run.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span> <span class="comment"># 触发工作流的条件</span></span><br><span class="line">  <span class="comment"># Triggers the workflow on push or pull request events but only for the master branch</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span> <span class="string">[master]</span> <span class="comment"># 监听的具体分支</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#   # Allows you to run this workflow manually from the Actions tab</span></span><br><span class="line"><span class="comment">#   workflow_dispatch:</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A workflow run is made up of one or more jobs that can run sequentially or in parallel</span></span><br><span class="line"><span class="attr">jobs:</span> <span class="comment">#这个工作留下的jobs</span></span><br><span class="line">  <span class="comment"># This workflow contains a single job called "build"</span></span><br><span class="line">  <span class="attr">build-and-deploy:</span> <span class="comment"># job的名字</span></span><br><span class="line">    <span class="comment"># The type of runner that the job will run on</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span> <span class="comment">#指定运行所需要的虚拟机环境</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Steps represent a sequence of tasks that will be executed as part of the job</span></span><br><span class="line">    <span class="attr">steps:</span> <span class="comment"># 指定每个job的运行步骤</span></span><br><span class="line">      <span class="comment"># Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">checkout</span> <span class="comment"># step的名字</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@master</span> <span class="comment"># 使用了github中的action,具体是把仓库的代码拷贝虚拟机</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># Runs a single command using the runners shell</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">buildAndDeploy</span> <span class="string">step的名字</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">JamesIves/github-pages-deploy-action@master</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">ACCESS_TOKEN:</span> <span class="string">$&#123;&#123;secrets.SHAREDHOUSE_ACCESS_TOKEN&#125;&#125;</span> <span class="comment">#自己存放的一个private token</span></span><br><span class="line">          <span class="attr">BRANCH:</span> <span class="string">gh-pages</span> <span class="comment"># 存放产物的分支名称，也就是发布分支</span></span><br><span class="line">          <span class="attr">FOLDER:</span> <span class="string">build</span> <span class="comment"># 存放build后产物的目录</span></span><br><span class="line">          <span class="attr">BUILD_SCRIPT:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">&amp;&amp;</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">build</span> <span class="comment">## 执行的脚本</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="实践：把-React-项目发布到-github-pages"><a href="#实践：把-React-项目发布到-github-pages" class="headerlink" title="实践：把 React 项目发布到 github pages"></a>实践：把 React 项目发布到 github pages</h2><h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>本地计算机使用 <code>create-react-app</code> ，生成一个标准的 React 应用.然后打开<code>package.json</code><br>增加一个 homepage 字段，表示该应用发布之后的<strong>根目录</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">"name": "shared-house",</span><br><span class="line">"version": "0.1.0",</span><br><span class="line">"private": true,</span><br><span class="line">"homepage":"https://[username].github.io/[repo名]",</span><br></pre></td></tr></table></figure>
+
+<p>然后我们需要登录我们的 github 账号，然后新近一个 repo 仓库,然后把刚才的项目代码发布到这个仓库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;first commit&quot;</span><br><span class="line">git remote add origin [仓地址]</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>在这之前，我们需要先申请一个 private token。</p>
+<ol>
+<li><p>点击 github 上我们的<strong>小头像</strong>，然后点击<code>settings</code>,点击左侧列表中的<code>Developer settings</code></p>
+</li>
+<li><p>然后在左侧列表选择 <code>Personal access tokens</code></p>
+</li>
+<li><p>最后我们点击<code>Generate new token</code>按钮，选择好权限，生成一个新的 token，记下生成的 token，一会我们还需要用到。</p>
+</li>
+<li><p>我们肯定是不可能把 token 暴露在开源的项目中的 yaml 文件里的，所以我们需要把 token 保存在 secret 中。</p>
+</li>
+<li><p>回到我们创建的仓库，点击 settings</p>
+</li>
+<li><p>点击左侧的 Secrets 按钮，点击点击<code>Add a new secret</code>按钮，自己起个 Secret 名称（我这就叫 ACCESS_TOKEN 了）并填入刚申请的 token 值，点击<code>Add secret</code>按钮。</p>
+</li>
+</ol>
+<h3 id="编写-actions"><a href="#编写-actions" class="headerlink" title="编写 actions"></a>编写 actions</h3><p>回到我们的仓库，点击 Actions 按钮，进入到 Actions 页面，点击<code>Set up a workflow yourself</code></p>
+<p>现在让我们开始编写 yml 文件吧，输入以下内容，并给 yml 文件换个名字，我们就叫 <code>buildAndDeploy.yml</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">name: buildAndDeploy</span><br><span class="line">on:</span><br><span class="line">  push</span><br><span class="line">jobs:</span><br><span class="line">  build-and-deploy:</span><br><span class="line">    runs-on: ubuntu-latest # 我们选择使用最新的ubuntu系统</span><br><span class="line">    steps:</span><br><span class="line">    - name: checkout</span><br><span class="line">      uses: actions&#x2F;checkout@master # 将代码拷贝到虚机中</span><br><span class="line"></span><br><span class="line">    - name: buildAndDeploy</span><br><span class="line">      uses: JamesIves&#x2F;github-pages-deploy-action@master</span><br><span class="line">      env:</span><br><span class="line">        ACCESS_TOKEN: $&#123;&#123; secrets.ACCESS_TOKEN &#125;&#125; # 使用刚新建的secret</span><br><span class="line">        BRANCH: gh-pages # 存放产物的分支名称</span><br><span class="line">        FOLDER: dist # 存放build后产物的目录</span><br><span class="line">        BUILD_SCRIPT: npm install &amp;&amp; npm run build # 执行的命令</span><br></pre></td></tr></table></figure>
+
+<p>点击 <code>Start commit</code>按钮，接着点击<code>Commit new file</code>按钮。</p>
+<p>回到我们的仓库，我们会发现我们的 action 已经跑起来了<br><img src="/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/Actions.png" alt="Actions.png"></p>
+<p>点击 details 可以看详情</p>
+<h3 id="开启-github-Pages"><a href="#开启-github-Pages" class="headerlink" title="开启 github Pages"></a>开启 github Pages</h3><ol>
+<li>进入仓库的 settings 界面</li>
+<li>找到 GitHub Pages 设置，Source 选择我们在 yml 文件中指定的那个分支(也就是 build 之后的产物的那个分支)，设置完成后可以看到一行蓝色的提示：Your site is ready to be published at xxxxxx</li>
+</ol>
+<p><img src="/2021/02/04/githubAction%E5%AE%9E%E8%B7%B5/githubPage.png" alt="githubPage.png"></p>
+<p>最后我们访问 <code>https://[用户名].github.io/[项目名]</code> 就可以看到自己的网站啦。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://lanniu.blog.csdn.net/article/details/103681903?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control" target="_blank" rel="noopener">https://lanniu.blog.csdn.net/article/details/103681903?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control</a></p>
+<p><a href="http://www.ruanyifeng.com/blog/2019/09/getting-started-with-github-actions.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2019/09/getting-started-with-github-actions.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+    <div>
+    
+    	<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:15px;">-------本&nbsp;文&nbsp;		结&nbsp;束&nbsp;&nbsp;<i class="fa fa-heart" aria-hidden="true"></i>&nbsp;&nbsp;感			&nbsp;谢&nbsp;您&nbsp;的&nbsp;阅&nbsp;读-------</div>
+    
+</div>
+    
+    </div>
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CI-CD/" rel="tag"><i class="fa fa-tag"></i> CI/CD</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/10/20/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E8%B7%A8%E6%A1%86%E6%9E%B6%E7%BB%84%E4%BB%B6/" rel="next" title="如何开发跨框架组件">
+                <i class="fa fa-chevron-left"></i> 如何开发跨框架组件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/18/Promise%E5%AE%9E%E7%8E%B0/" rel="prev" title="Promise实现">
+                Promise实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+<div id="gitalk-container"></div>
+  
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/iu.jpg"
+                alt="yinjiangQAQ" />
+            
+              <p class="site-author-name" itemprop="name">yinjiangQAQ</p>
+              <p class="site-description motion-element" itemprop="description">to rise abruptly based on its accumulated strength</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yinjiangqaq" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/yinjiangQAQ" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+<div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=0&id=4875667277&auto=1&height=32"></iframe>
+</div>
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-book"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xz.aliyun.com/t/1121" title="Web日志安全分析浅谈" target="_blank">Web日志安全分析浅谈</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/zgcr654321/article/details/86751765" title="hexo主题个性化设置" target="_blank">hexo主题个性化设置</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Github-Action"><span class="nav-number">1.</span> <span class="nav-text">Github Action</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单介绍"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">1.2.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#workflow-文件"><span class="nav-number">1.3.</span> <span class="nav-text">workflow 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践：把-React-项目发布到-github-pages"><span class="nav-number">1.4.</span> <span class="nav-text">实践：把 React 项目发布到 github pages</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">1.4.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写-actions"><span class="nav-number">1.4.2.</span> <span class="nav-text">编写 actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开启-github-Pages"><span class="nav-number">1.4.3.</span> <span class="nav-text">开启 github Pages</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.5.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021-06-23</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yinjiangQAQ</span>
+
+  
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访客量
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'd7c6c3bbab4731498c84',
+          clientSecret: 'd60bdc81e56342e72ef66b9761ce7e77864daa3b',
+          repo: 'blog-comments',
+          owner: 'yinjiangqaq',
+          admin: ['yinjiangqaq'],
+          id: md5(location.pathname),
+          labels: ['gitment'],
+          perPage: 15,
+          pagerDirection: 'last',
+          createIssueManually: true,
+          distractionFreeMode: false
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.4"></script>
+
+
+  
+
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
